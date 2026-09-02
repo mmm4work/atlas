@@ -1,0 +1,792 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI-Атлас — инфографика по-журнальному</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --ground:#F3F5F7; --surface:#FFFFFF; --ink:#182028; --muted:#64717D;
+  --line:#DFE5EA; --accent:#0D6E8C; --accent-ink:#0A5670; --accent-soft:#E0EFF4;
+  --amber:#9C6B12; --amber-soft:#F6EEDE; --chip:#E8EDF1; --chip-on:#0D6E8C;
+  --chip-on-ink:#FFFFFF; --hero-glow:rgba(13,110,140,.13); --seg:#E4EAEE;
+  --metric:#0A5670; --land:#DCE6EB; --land-hi:#BFD8E2;
+  --brandgrad:linear-gradient(90deg,#0D6E8C 0%,#2C8FA6 45%,#63B7A8 100%);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#12171B; --surface:#1A2127; --ink:#E8EDF1; --muted:#8C99A5;
+    --line:#28313A; --accent:#4FB6D4; --accent-ink:#7FCDE3; --accent-soft:#132B34;
+    --amber:#D9A552; --amber-soft:#2C2517; --chip:#212A32; --chip-on:#4FB6D4;
+    --chip-on-ink:#0B171C; --hero-glow:rgba(79,182,212,.11); --seg:#1F272E;
+    --metric:#7FCDE3; --land:#243039; --land-hi:#2F4551;
+    --brandgrad:linear-gradient(90deg,#4FB6D4 0%,#68C5C0 50%,#9BD9B4 100%);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#12171B; --surface:#1A2127; --ink:#E8EDF1; --muted:#8C99A5;
+    --line:#28313A; --accent:#4FB6D4; --accent-ink:#7FCDE3; --accent-soft:#132B34;
+    --amber:#D9A552; --amber-soft:#2C2517; --chip:#212A32; --chip-on:#4FB6D4;
+    --chip-on-ink:#0B171C; --hero-glow:rgba(79,182,212,.11); --seg:#1F272E;
+    --metric:#7FCDE3; --land:#243039; --land-hi:#2F4551;
+    --brandgrad:linear-gradient(90deg,#4FB6D4 0%,#68C5C0 50%,#9BD9B4 100%);
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--ground); color:var(--ink);
+  font:16px/1.55 "Golos Text",-apple-system,"Segoe UI",sans-serif;}
+.wrap{max-width:820px; margin:0 auto; padding:0 16px 56px;}
+h1,h2,h3{margin:0; text-wrap:balance;}
+h2{font-family:"Playfair Display",Georgia,serif; font-size:1.32rem; font-weight:600;
+  letter-spacing:-.005em;}
+a{color:var(--accent);}
+/* герой: картографическая панель */
+.hero{margin:0 -16px; padding:0; background:#0D1418; position:relative;
+  overflow:hidden; border-bottom:3px solid transparent;
+  border-image:var(--brandgrad) 1;}
+.hero::before{content:""; position:absolute; inset:0;
+  background:
+    linear-gradient(rgba(79,182,212,.10) 1px, transparent 1px) 0 0/100% 44px,
+    linear-gradient(90deg, rgba(79,182,212,.10) 1px, transparent 1px) 0 0/44px 100%;
+  mask-image:radial-gradient(120% 100% at 78% 30%, #000 25%, transparent 78%);
+  -webkit-mask-image:radial-gradient(120% 100% at 78% 30%, #000 25%, transparent 78%);}
+.hero::after{content:""; position:absolute; inset:0;
+  background:radial-gradient(140% 120% at 80% 30%, rgba(13,110,140,.22), transparent 62%);}
+.globe{position:absolute; right:-70px; top:-38px; width:340px; height:340px;
+  opacity:.85; pointer-events:none; z-index:0;}
+@media (max-width:560px){ .globe{width:250px; height:250px; right:-84px; top:-30px;} }
+.globe .grid{fill:none; stroke:#4FB6D4; stroke-width:.8; opacity:.42;}
+.globe .rim{fill:none; stroke:#68C5C0; stroke-width:1.4; opacity:.7;}
+.globe .land{fill:rgba(104,197,192,.14); stroke:rgba(155,217,180,.5); stroke-width:.9;}
+.globe .pin{fill:#9BD9B4;}
+.globe .pin.a{animation:blip 3.6s ease-in-out infinite;}
+.globe .pin.b{animation:blip 3.6s ease-in-out .9s infinite;}
+.globe .pin.c{animation:blip 3.6s ease-in-out 1.8s infinite;}
+@keyframes blip{0%,100%{opacity:.45;} 50%{opacity:1;}}
+@media (prefers-reduced-motion: reduce){ .globe .pin{animation:none; opacity:.8;} }
+.hero .inner{max-width:788px; margin:0 auto; padding:36px 16px 26px;
+  display:flex; flex-direction:column; gap:12px; position:relative; z-index:1;}
+.brand{font-family:"Playfair Display",Georgia,serif; font-weight:600; color:#F1F5F6;
+  font-size:clamp(1.8rem,6.4vw,2.6rem); letter-spacing:-.01em; line-height:1.08;}
+.brand .bank{background:var(--brandgrad); -webkit-background-clip:text;
+  background-clip:text; color:transparent;}
+.heroline{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+.weektag{font-family:"JetBrains Mono",monospace; font-size:.78rem;
+  color:#9AAAB2; background:rgba(255,255,255,.07); border-radius:6px; padding:3px 9px;}
+.demo{font-size:.7rem; font-weight:600; letter-spacing:.06em;
+  color:#E3C27E; background:rgba(227,194,126,.12); border-radius:6px;
+  padding:3px 9px; text-transform:uppercase;}
+.hero p{margin:0; color:#AAB9C0; max-width:56ch;}
+.steps{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:6px;}
+@media (max-width:520px){ .steps{grid-template-columns:1fr;} }
+.steps a{display:flex; flex-direction:column; gap:3px; text-decoration:none;
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12);
+  border-radius:14px; padding:12px 14px; transition:border-color .15s, background .15s;}
+.steps a:hover{border-color:var(--accent); background:rgba(79,182,212,.09);}
+.steps .n{font-family:"JetBrains Mono",monospace; font-size:.7rem;
+  color:#68C5C0; letter-spacing:.08em;}
+.steps .t{font-weight:600; color:#F1F5F6; font-size:.95rem;}
+.steps .sub{font-size:.8rem; color:#9AAAB2;}
+section{margin-top:34px;}
+.sechead{display:flex; align-items:baseline; justify-content:space-between;
+  gap:10px; margin-bottom:12px;}
+.count{font-family:"JetBrains Mono",monospace; font-size:.76rem; color:var(--muted);}
+h3.rubric{font-size:.76rem; letter-spacing:.11em;
+  text-transform:uppercase; color:var(--accent-ink); font-weight:600;
+  margin:22px 0 8px; display:flex; align-items:center; gap:8px;}
+h3.rubric::after{content:""; flex:1; height:1px; background:var(--line);}
+/* сводка */
+ul.digest{display:flex; flex-direction:column; margin:0; padding:0; gap:10px;}
+.digest li{list-style:none; background:var(--surface); border:1px solid var(--line);
+  border-radius:14px; padding:12px 14px;}
+.digest .d{font-family:"JetBrains Mono",monospace; font-size:.72rem;
+  color:var(--muted);}
+.digest p{margin:4px 0 0;}
+.digest b{font-weight:600;}
+.digest .src{font-size:.8rem; color:var(--muted);}
+.ru{display:inline-block; font-size:.66rem; font-weight:700; letter-spacing:.05em;
+  border-radius:4px; padding:0 5px; background:var(--accent-soft);
+  color:var(--accent-ink); vertical-align:1px;}
+/* регионы: горизонтальная лента на телефоне */
+.regions{display:flex; gap:8px; overflow-x:auto; padding:2px 2px 8px;
+  scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch;}
+.regions::-webkit-scrollbar{display:none;}
+@media (min-width:640px){ .regions{flex-wrap:wrap; overflow:visible;} }
+.regions button{flex:0 0 auto; scroll-snap-align:start; border-radius:999px;
+  font:500 .88rem/1 "Golos Text",sans-serif; color:var(--ink);
+  background:var(--chip); border:1px solid transparent; padding:10px 16px; cursor:pointer; transition:background .15s, color .15s,
+  border-color .15s, transform .1s;}
+.regions button:active{transform:scale(.97);}
+.regions button:hover{border-color:var(--accent);}
+.regions button.on{background:var(--chip-on); color:var(--chip-on-ink);
+  box-shadow:0 2px 10px var(--hero-glow);}
+.regions button:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+.profile{margin-top:8px; font-size:.9rem; color:var(--muted);}
+.profile b{color:var(--ink); font-weight:600;}
+
+/* числовые плитки: иконка слева, число справа, подпись под ним */
+.stat{display:grid; grid-template-columns:auto 1fr; column-gap:12px; row-gap:2px;
+  align-items:center; background:var(--accent-soft); border-radius:14px;
+  padding:14px 16px; min-width:0;}
+.stat .ic{grid-row:1 / span 2; width:30px; height:30px; color:var(--accent-ink);
+  opacity:.9;}
+.stat .v{font-family:"JetBrains Mono",monospace; font-variant-numeric:tabular-nums;
+  font-size:1.5rem; font-weight:600; color:var(--metric); line-height:1.1;
+  align-self:end; word-break:break-word;}
+.stat .k{font-size:.82rem; color:var(--muted); line-height:1.35; align-self:start;}
+.stat.down .v::before{content:"↓ "; font-size:.85em;}
+.stat.up .v::before{content:"↑ "; font-size:.85em;}
+/* главная цифра — крупной плашкой в начале */
+.hero-stat{display:flex; align-items:center; gap:16px; background:var(--accent-soft);
+  border-radius:16px; padding:18px 20px; margin-bottom:4px;}
+.hero-stat .ic{width:40px; height:40px; flex:0 0 auto; color:var(--accent-ink);}
+.hero-stat .txt{display:flex; flex-direction:column; gap:3px; min-width:0;}
+.hero-stat .v{font-family:"JetBrains Mono",monospace; font-variant-numeric:tabular-nums;
+  font-size:2.1rem; font-weight:600; color:var(--metric); line-height:1;}
+.hero-stat .k{font-size:.9rem; color:var(--muted);}
+.hero-stat.down .v::before{content:"↓ ";}
+.hero-stat.up .v::before{content:"↑ ";}
+/* врезка сбоку — как в журнале */
+.aside-stat{width:210px; margin:4px 0 12px 20px; float:right; clear:both;}
+.aside-stat.left{float:left; margin:4px 20px 12px 0;}
+@media (max-width:560px){
+  .aside-stat{float:none; width:auto; margin:8px 0 12px;}
+}
+.stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px;
+  margin:2px 0 6px;}
+.modal .body::after{content:""; display:block; clear:both;}
+/* всплывающее окно новости */
+.digest li{cursor:pointer; transition:border-color .15s, transform .1s;}
+.digest li:hover{border-color:var(--accent);}
+.digest li:active{transform:scale(.995);}
+.digest li:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+.more{display:inline-block; margin-top:6px; font-size:.8rem; font-weight:600;
+  color:var(--accent);}
+.ovl{position:fixed; inset:0; background:rgba(8,14,18,.62); z-index:50;
+  display:flex; align-items:flex-end; justify-content:center; padding:0;
+  backdrop-filter:blur(2px);}
+@media (min-width:640px){ .ovl{align-items:center; padding:24px;} }
+.ovl[hidden]{display:none!important;}
+.modal{background:var(--surface); width:100%; max-width:760px; max-height:94vh;
+  border-radius:18px 18px 0 0; display:flex; flex-direction:column;
+  box-shadow:0 -8px 40px rgba(0,0,0,.35); animation:rise .22s ease-out;}
+@media (min-width:640px){ .modal{border-radius:18px; animation:fade .18s ease-out;} }
+@keyframes rise{from{transform:translateY(28px); opacity:.6;} to{transform:none; opacity:1;}}
+@keyframes fade{from{opacity:0; transform:scale(.98);} to{opacity:1; transform:none;}}
+@media (prefers-reduced-motion: reduce){ .modal{animation:none;} }
+.modal header{display:flex; align-items:flex-start; gap:12px; padding:16px 16px 12px;
+  border-bottom:1px solid var(--line); position:sticky; top:0; z-index:3;
+  background:var(--surface); border-radius:18px 18px 0 0;}
+.modal header .mt{flex:1; display:flex; flex-direction:column; gap:5px;}
+.modal h3{font-family:"Playfair Display",Georgia,serif; font-size:1.42rem;
+  font-weight:600; line-height:1.25; margin:0;}
+.modal .meta{font-family:"JetBrains Mono",monospace; font-size:.72rem;
+  color:var(--muted);}
+.xbtn{flex:0 0 auto; width:34px; height:34px; border-radius:10px; border:0;
+  background:var(--chip); color:var(--ink); font-size:1.1rem; line-height:1;
+  cursor:pointer;}
+.xbtn:hover{background:var(--land-hi);}
+.xbtn:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+.modal .body{padding:16px 18px 22px; overflow-y:auto; font-size:1.02rem; line-height:1.62; -webkit-overflow-scrolling:touch;
+  display:flex; flex-direction:column; gap:11px;}
+.modal .body p{margin:0;}
+.modal .why{background:var(--accent-soft); border-radius:12px; padding:11px 13px;
+  font-size:.93rem;}
+.modal .why b{color:var(--accent-ink);}
+.modal footer{padding:12px 16px 16px; border-top:1px solid var(--line);
+  position:sticky; bottom:0; background:var(--surface); z-index:3;
+  display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+.srcbtn{flex:1 1 auto; text-align:center; text-decoration:none; font-weight:600;
+  font-size:.92rem; background:var(--accent); color:#fff; border-radius:12px;
+  padding:12px 16px;}
+.srcbtn:hover{background:var(--accent-ink);}
+.modal footer .hint{font-size:.76rem; color:var(--muted); flex:1 1 100%;}
+/* блок «в регионе» */
+.regblock{margin-top:22px;}
+.regblock ul{display:flex; flex-direction:column; gap:10px; margin:8px 0 0; padding:0;}
+.regblock li{list-style:none; cursor:pointer; transition:border-color .15s; background:var(--surface); border:1px solid var(--line);
+  border-left:3px solid var(--accent); border-radius:12px; padding:12px 14px;}
+.regblock li:hover{border-color:var(--accent);}
+.regblock li:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+.regblock .d{font-family:"JetBrains Mono",monospace; font-size:.72rem; color:var(--muted);}
+.regblock .t{font-weight:600; margin:3px 0 2px;}
+.regblock .g{font-size:.9rem; color:var(--muted); margin:0;}
+.regblock .s{font-size:.78rem; color:var(--muted);}
+/* карта-фильтр */
+.mapwrap{background:var(--surface); border:1px solid var(--line); border-radius:16px;
+  padding:12px 10px 6px; margin-bottom:4px;}
+svg.map{width:100%; height:auto; display:block; touch-action:manipulation;}
+.reg{fill:var(--land); stroke:var(--surface); stroke-width:.5; cursor:pointer;
+  transition:fill .15s;}
+.reg:hover{fill:var(--land-hi);}
+.reg.on{fill:var(--accent);}
+.reg:focus{outline:none;}
+.reg:focus-visible{outline:2px solid var(--accent-ink); outline-offset:2px;}
+body.mouse .reg:focus-visible{outline:none;}
+.lbl{font:600 2.6px "Golos Text",sans-serif; fill:var(--ink); text-anchor:middle;
+  pointer-events:none; paint-order:stroke; stroke:var(--surface); stroke-width:.7px;}
+.lbl.small{font-size:2.05px;}
+.lbl.on{fill:#fff; stroke:none;}
+#legend{display:none;}
+.lg-title{display:none;}
+#news .morebtn{display:none;}
+.maphint{font-size:.82rem; color:var(--muted); margin:8px 0 0;}
+.reset{margin-top:6px; font:500 .84rem "Golos Text",sans-serif; color:var(--accent);
+  background:none; border:0; cursor:pointer; padding:4px 0; text-decoration:underline;}
+/* сегментный контрол B2B/B2G */
+.seg{display:inline-flex; background:var(--seg); border-radius:12px; padding:3px;
+  gap:2px; margin-bottom:14px;}
+.seg button{font:500 .85rem/1 "Golos Text",sans-serif; color:var(--muted);
+  background:transparent; border:0; border-radius:9px; padding:9px 18px;
+  cursor:pointer; transition:background .15s, color .15s;}
+.seg button.on{background:var(--surface); color:var(--ink);
+  box-shadow:0 1px 4px rgba(0,0,0,.12);}
+.seg button:focus-visible{outline:2px solid var(--accent); outline-offset:1px;}
+/* карточки */
+.cards{display:flex; flex-direction:column; gap:10px;}
+details.case{background:var(--surface); border:1px solid var(--line);
+  border-radius:16px; overflow:hidden; transition:border-color .15s;}
+details.case[open]{border-color:var(--accent);}
+details.case summary{list-style:none; cursor:pointer; padding:14px 16px;
+  display:flex; flex-direction:column; gap:6px; position:relative;}
+details.case summary::-webkit-details-marker{display:none;}
+details.case summary::after{content:""; position:absolute; right:16px; top:18px;
+  width:9px; height:9px; border-right:2px solid var(--muted);
+  border-bottom:2px solid var(--muted); transform:rotate(45deg);
+  transition:transform .18s;}
+details.case[open] summary::after{transform:rotate(225deg); top:22px;}
+details.case summary:focus-visible{outline:2px solid var(--accent); outline-offset:-2px;}
+.case .toprow{display:flex; gap:10px; align-items:baseline;
+  justify-content:space-between; padding-right:22px;}
+.case .name{font-family:"Playfair Display",Georgia,serif; font-weight:600; font-size:1.08rem;
+  line-height:1.3;}
+.case .date{font-family:"JetBrains Mono",monospace; font-size:.72rem;
+  color:var(--muted); white-space:nowrap;}
+.case .gist{font-size:.92rem; color:var(--muted); margin:0;}
+.tags{display:flex; flex-wrap:wrap; gap:5px; margin-top:2px;}
+.tag{font-size:.68rem; font-weight:700; letter-spacing:.04em; color:var(--accent-ink);
+  background:var(--accent-soft); border-radius:5px; padding:2px 8px;}
+.tag.aud{color:var(--amber); background:var(--amber-soft);}
+.tag.kind{background:var(--ink); color:var(--ground);}
+.tag.kind.bench{background:var(--amber); color:var(--surface);}
+.case .body{border-top:1px solid var(--line); padding:14px 16px;
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:12px;}
+.case .f{display:flex; flex-direction:column; gap:2px;}
+.case .f .k{font-size:.68rem; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--muted); font-weight:600;}
+.case .f .v{font-size:.92rem;}
+.case .f .v.num{font-family:"JetBrains Mono",monospace;
+  font-variant-numeric:tabular-nums;}
+.case .f.effect{grid-column:1/-1; background:var(--accent-soft);
+  border-radius:10px; padding:10px 12px;}
+.case .f.effect .v{color:var(--metric); font-weight:600; font-size:1rem;}
+ul.effl{margin:0; padding:0; display:flex; flex-direction:column; gap:5px;}
+.effl li{list-style:none; display:flex; gap:8px; align-items:baseline;
+  color:var(--metric); font-weight:600; font-size:.96rem;}
+.effl .i{flex:0 0 auto; width:20px; height:20px; border-radius:6px;
+  display:inline-flex; align-items:center; justify-content:center;
+  background:var(--accent); color:var(--surface); font-size:.72rem;
+  font-weight:700; transform:translateY(3px);}
+.case .srcline{grid-column:1/-1; font-size:.82rem; color:var(--muted);
+  border-top:1px dashed var(--line); padding-top:10px;}
+.nb{color:var(--amber); font-weight:600;}
+.legal{margin-top:16px; padding-top:14px; border-top:1px solid var(--line);
+  display:flex; flex-direction:column; gap:9px; font-size:.78rem; line-height:1.5;}
+.legal b{color:var(--ink); font-weight:600;}
+.empty{color:var(--muted); font-size:.92rem; padding:14px 0;}
+footer{margin-top:44px; font-size:.82rem; color:var(--muted);
+  border-top:1px solid var(--line); padding-top:14px;}
+[hidden]{display:none!important;}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important;} }
+
+.note{background:var(--accent-soft); border-radius:12px; padding:12px 14px;
+  font-size:.9rem; margin:20px 0 8px;}
+.item{background:var(--surface); border:1px solid var(--line); border-radius:14px;
+  padding:13px 15px; cursor:pointer; transition:border-color .15s;}
+.item:hover{border-color:var(--accent);}
+.item:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+.item .toprow{display:flex; gap:14px; align-items:baseline; justify-content:space-between;}
+.item .date{flex:0 0 auto;}
+.item .t{font-family:"Playfair Display",Georgia,serif; font-weight:600; font-size:1.04rem;
+  line-height:1.3;}
+.item .g{font-size:.9rem; color:var(--muted); margin:4px 0 0;}
+.k-kejs{background:var(--ink); color:var(--ground);}
+.k-praktika{background:var(--amber); color:var(--surface);}
+.k-novost{background:var(--chip); color:var(--muted);}
+.sc{border:1px solid var(--line); background:transparent; color:var(--muted);}
+.sc.reg{border-color:var(--accent); color:var(--accent-ink);}
+
+/* --- широкий экран --- */
+@media (min-width:1000px){
+  .wrap{max-width:1720px; padding:0 40px 72px;}
+  .hero{margin:0 -40px;}
+  .hero .inner{max-width:1640px; padding:40px 40px 30px;}
+  .globe{width:420px; height:420px; right:-40px; top:-50px;}
+  .hero p{max-width:52ch; font-size:1.05rem;}
+  .steps{max-width:760px;}
+  /* новости недели в две колонки */
+  #news .rubcols{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:26px;
+    align-items:start;}
+  #news .rubcol{min-width:0;}
+  #news .rubcol .rubric{margin-top:0;}
+  #news .rubcol .digest li.hid{display:none;}
+  #news .morebtn{display:block; margin:8px 0 0 auto; font:600 .82rem "Golos Text",sans-serif;
+    color:var(--accent); background:none; border:0; cursor:pointer; padding:4px 2px;}
+  #news .morebtn:hover{text-decoration:underline;}
+  ul.digest{display:flex; flex-direction:column;}
+  /* регион: карта слева, лента справа */
+  .col-news,.col-cases{min-width:0;}
+  .col-left{position:sticky; top:24px;}
+  .col-right{min-width:0;}
+  .col-right .sechead:first-child{margin-top:0;}
+  .col-right .rubric:first-of-type{margin-top:4px;}
+  h1,.brand{font-size:2.9rem;}
+  h2{font-size:1.5rem;}
+  .item .t{font-size:1.1rem;}
+  .modal{max-width:860px; max-height:90vh;}
+  .modal .body{font-size:1.05rem; padding:20px 24px 26px;}
+  .modal header{padding:20px 24px 14px;}
+  .modal footer{padding:14px 24px 20px;}
+
+  /* закреплённый верх: карта слева, панель справа; ниже две колонки */
+  .wrap{max-width:1560px; padding:0 36px 72px;}
+  .hero{margin:0 -36px;}
+  .hero .inner{max-width:1488px;}
+  .region-grid{display:block;}
+  .region-top{position:sticky; top:0; z-index:6; background:var(--ground);
+    display:grid; grid-template-columns:1fr 1fr; gap:26px;
+    align-items:stretch; padding:8px 0 14px; border-bottom:1px solid var(--line);}
+  .region-top .mapwrap{margin:0;}
+  .region-top svg.map{max-height:40vh; width:auto; margin:0 auto; display:block;}
+  .panel{display:flex; flex-direction:column; gap:12px; height:100%;}
+  .panel .pickrow{margin-bottom:auto;}
+  .panel .seg{margin:0; width:100%;}
+  .panel .seg button{flex:1 1 auto;}
+  .pickrow{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;}
+  .pickrow .maphint{margin:0; flex:1 1 240px;}
+  .pickrow .reset{margin:0;}
+  #legend{display:flex; margin-top:0; position:relative; padding-top:28px;}
+  .lg-title{display:block; position:absolute; top:10px; right:15px;
+    font-size:.7rem; letter-spacing:.03em; color:var(--muted); opacity:.7;}
+  .region-bottom{display:grid; grid-template-columns:1fr 1fr; gap:26px;
+    align-items:start; margin-top:10px;}
+  .col-news,.col-cases{min-width:0;}
+
+
+  /* легенда — только на широком экране */
+  #legend{display:flex;}
+  .legend{display:flex; flex-direction:column; gap:7px; margin-top:18px;
+    padding:14px 16px; background:var(--surface); border:1px solid var(--line);
+    border-radius:14px; font-size:.84rem; color:var(--muted);}
+  .lg-row{display:grid; grid-template-columns:92px 1fr; align-items:center; gap:10px;}
+  .lg-row .tag{justify-self:start; text-align:center;}
+  .lg-sep{height:1px; background:var(--line); margin:3px 0;}
+  /* карта крупнее и без пустот */
+  .mapwrap{padding:6px 4px 2px;}
+  /* «показать всё» отделено от переключателя */
+  .reset{display:block; margin:14px 0 4px;}
+  /* шапка компактнее, глобус вписан целиком */
+  .hero .inner{padding:34px 32px 26px;}
+  .globe{width:330px; height:330px; right:16px; top:50%; transform:translateY(-50%);}
+  .brand{font-size:2.5rem;}
+}
+
+</style>
+
+<div class="wrap">
+<div class="hero"><svg class="globe" viewBox="0 0 200 200" aria-hidden="true">
+  <circle class="rim" cx="100" cy="100" r="78"/>
+  <ellipse class="grid" cx="100" cy="100" rx="78" ry="26"/>
+  <ellipse class="grid" cx="100" cy="100" rx="78" ry="52"/>
+  <ellipse class="grid" cx="100" cy="100" rx="78" ry="72"/>
+  <ellipse class="grid" cx="100" cy="100" rx="26" ry="78"/>
+  <ellipse class="grid" cx="100" cy="100" rx="52" ry="78"/>
+  <line class="grid" x1="22" y1="100" x2="178" y2="100"/>
+  <path class="land" d="M62 66c12-9 27-6 34 2 7 8 20 5 27 12 6 6 2 16-7 18-10 2-16-4-25-2-11 3-19-3-24-11-4-7-9-14-5-19z"/>
+  <path class="land" d="M104 126c8-6 19-3 24 4 4 6 0 14-8 15-9 1-16-3-19-8-2-5-1-9 3-11z"/>
+  <circle class="pin a" cx="79" cy="79" r="3.4"/>
+  <circle class="pin b" cx="120" cy="132" r="3"/>
+  <circle class="pin c" cx="132" cy="72" r="2.6"/>
+</svg>
+<div class="inner">
+  <div class="brand">AI-<span class="bank">Атлас</span></div>
+  <div class="heroline">
+    <span class="weektag">неделя 25.08 — 02.09.2026</span>
+  </div>
+  <p>Карта внедрений искусственного интеллекта: что происходит в России и мире —
+  и как это ложится на мой регион и его ключевые отрасли.</p>
+  <div class="steps">
+    <a href="#news"><span class="t">ИИ в мире</span>
+      <span class="sub">главные события: бизнес, государство, наука</span></a>
+    <a href="#cases"><span class="t">Для моего региона</span>
+      <span class="sub">новости, релевантные кейсы и отраслевые практики</span></a>
+  </div>
+</div></div>
+
+<section id="news">
+  <div class="sechead"><h2>Неделя в ИИ</h2><span class="count">8 тезисов</span></div>
+
+  <div class="rubcols">
+<div class="rubcol"><h3 class="rubric">Бизнес</h3>
+  <ul class="digest">
+    <li data-id="db-agents" tabindex="0" role="button"><span class="d">01.09.2026</span><p><b>Крупнейшие банки доверяют ИИ-агентам целые процессы, а не только чаты.</b> Google Cloud открыл агентную платформу для финсектора, первый партнёр — Deutsche Bank. <span class="src">— aiagentstore.ai</span></p><span class="more">Читать целиком →</span></li>
+    <li data-id="breedr" tabindex="0" role="button"><span class="d">27.08.2026</span><p><b>Инвесторы продолжают вкладываться в отраслевой ИИ для села.</b> Платформа управления стадом Breedr (США/Британия) привлекла $27 млн на экспансию. <span class="src">— agfundernews.com</span></p><span class="more">Читать целиком →</span></li>
+    <li data-id="ru-pilots" tabindex="0" role="button"><span class="d">01.07.2026</span><p><b><span class="ru">РФ</span> Российский ИИ вышел из стадии пилотов.</b> 36% организаций уже измеряют прямой экономический эффект от внедрений. <span class="src">— cnews.ru</span></p><span class="more">Читать целиком →</span></li>
+    <li data-id="genai-speed" tabindex="0" role="button"><span class="d">03.06.2026</span><p><b><span class="ru">РФ</span> Генеративный ИИ в компаниях запускается за 1–4 месяца.</b> Работает тираж одного доведённого до результата кейса, а не десятки параллельных пилотов. <span class="src">— vedomosti.ru</span></p><span class="more">Читать целиком →</span></li>
+    <li data-id="mature" tabindex="0" role="button"><span class="d">2026</span><p><b><span class="ru">РФ</span> Боты, распознавание документов и речевая аналитика стали зрелой рутиной.</b> Агентные системы российский бизнес пока пробует осторожно. <span class="src">— tadviser.ru</span></p><span class="more">Читать целиком →</span></li>
+  </ul></div>
+<div class="rubcol"><h3 class="rubric">Государство</h3>
+  <ul class="digest">
+    <li data-id="usa-review" tabindex="0" role="button"><span class="d">03.08.2026</span><p><b>США готовят госпроверку сильнейших ИИ-моделей до их выпуска.</b> Белый дом собрал OpenAI, Anthropic и других лидеров отрасли обсуждать эту рамку. <span class="src">— edition.cnn.com</span></p><span class="more">Читать целиком →</span></li>
+    <li data-id="patchwork" tabindex="0" role="button"><span class="d">27.07.2026</span><p><b>Регулирование ИИ в мире будет лоскутным.</b> Подано более 2 000 инициатив, единой долгосрочной рамки нет ни в одной — бизнесу придётся соответствовать разным правилам сразу. <span class="src">— cnbc.com</span></p><span class="more">Читать целиком →</span></li>
+  </ul></div>
+<div class="rubcol"><h3 class="rubric">Наука и технологии</h3>
+  <ul class="digest">
+    <li data-id="anthropic" tabindex="0" role="button"><span class="d">31.08.2026</span><p><b>Anthropic на месяц остановила часть обучения моделей ради безопасности.</b> Поводом стали инциденты с обходом ограничений; 150 инженеров переброшены на защиту. <span class="src">— aiagentstore.ai</span></p><span class="more">Читать целиком →</span></li>
+  </ul></div>
+</div>
+</section>
+
+<section id="cases">
+  <div class="sechead"><h2>Мой регион</h2></div>
+  <div class="region-top">
+  <div class="mapwrap"><svg class="map" id="svgmap" viewBox="-2 -2 104 72" role="group" aria-label="Карта девяти регионов">
+      <path class="reg" id="m-mrd" data-r="Мордовия" d="M19.68,57.98 L19.56,59.02 L20.45,59.05 L20.85,60.06 L20.19,60.88 L20.57,61.80 L19.02,63.07 L18.37,62.80 L18.74,63.61 L19.23,63.64 L19.65,62.81 L20.85,63.90 L20.33,63.58 L20.30,64.28 L19.73,63.95 L18.84,64.24 L19.69,65.02 L19.03,66.73 L19.95,67.24 L20.26,66.40 L20.18,67.12 L21.08,66.48 L21.02,67.20 L21.18,66.47 L22.59,66.60 L22.77,66.06 L23.05,66.52 L22.92,65.19 L24.84,64.86 L26.31,65.63 L26.72,66.20 L26.38,66.68 L26.94,67.20 L27.66,67.61 L28.89,67.35 L29.57,67.73 L29.38,68.02 L30.48,67.53 L29.88,66.69 L30.14,65.75 L32.58,65.23 L33.15,66.08 L34.30,65.58 L35.14,65.86 L36.29,63.69 L36.54,63.96 L36.82,63.49 L38.06,63.37 L38.52,62.76 L39.58,62.53 L39.87,61.88 L38.83,61.35 L39.16,60.72 L38.63,60.92 L39.00,60.13 L38.37,60.07 L38.98,59.63 L38.44,59.16 L38.39,57.58 L37.61,56.70 L37.54,55.81 L37.20,56.73 L36.75,56.10 L35.15,56.58 L35.45,55.44 L35.06,54.90 L34.00,55.62 L33.75,57.48 L32.83,57.55 L32.66,58.63 L32.27,58.21 L31.87,58.75 L32.16,59.45 L31.80,60.31 L32.43,60.53 L32.19,61.02 L30.66,60.57 L29.79,60.99 L30.13,60.63 L29.85,60.16 L29.23,60.56 L27.98,59.93 L27.35,59.49 L27.45,58.73 L26.66,58.71 L26.83,58.15 L25.77,58.04 L24.46,57.06 L24.59,58.05 L23.34,58.17 L23.11,57.37 L22.72,58.42 L21.34,58.59 L21.03,58.05 L20.54,58.38 L19.96,57.88 L19.74,58.62 L19.68,57.98 Z"><title>Мордовия</title></path>
+      <path class="reg" id="m-kir" data-r="Кировская обл." d="M41.51,6.94 L40.99,8.57 L41.35,9.48 L40.58,9.74 L40.06,12.12 L38.42,11.82 L37.71,12.15 L38.12,13.16 L40.09,13.76 L41.34,13.03 L40.81,16.09 L41.90,16.21 L41.40,19.45 L42.35,19.59 L42.16,20.88 L42.91,21.45 L43.43,21.24 L43.27,21.79 L44.19,23.29 L42.56,23.25 L42.67,24.31 L41.70,24.44 L41.26,25.82 L39.56,26.07 L39.19,27.68 L38.33,27.89 L37.98,30.23 L38.53,31.04 L38.83,30.68 L43.14,31.01 L44.81,32.01 L43.83,32.80 L43.44,35.18 L42.56,34.78 L41.28,35.41 L40.01,35.12 L40.34,35.76 L39.70,36.10 L40.13,36.28 L39.68,36.66 L40.50,37.66 L39.99,38.17 L40.30,38.88 L39.78,40.05 L41.65,40.20 L41.68,41.02 L42.42,41.18 L43.23,40.54 L43.58,40.81 L44.78,39.21 L45.67,39.90 L46.86,39.43 L46.54,38.95 L47.44,38.14 L47.85,38.61 L48.51,38.09 L49.72,38.11 L49.82,38.72 L50.37,38.84 L50.86,37.79 L50.64,37.10 L51.42,36.64 L51.26,38.02 L51.74,39.16 L52.45,39.50 L52.81,39.06 L53.88,39.06 L54.08,40.51 L55.42,40.65 L55.81,41.31 L55.70,42.85 L56.95,42.30 L57.26,43.14 L57.64,42.85 L57.38,43.36 L57.90,44.57 L58.33,44.59 L58.05,45.06 L58.85,45.37 L59.21,45.09 L58.82,44.56 L59.21,44.65 L59.62,45.42 L59.44,46.37 L60.05,46.30 L60.31,47.07 L61.01,46.98 L61.55,47.51 L62.39,46.28 L61.68,46.30 L61.94,45.59 L61.39,45.42 L61.45,44.45 L60.91,44.40 L60.64,43.69 L60.89,42.22 L61.89,42.37 L61.88,41.52 L62.56,40.52 L61.89,40.32 L61.06,39.17 L61.19,38.39 L60.62,37.49 L60.81,35.81 L62.82,35.64 L62.99,35.04 L63.97,34.70 L64.11,33.36 L64.53,33.06 L63.90,32.39 L64.40,31.06 L63.87,30.88 L63.70,29.75 L63.24,29.79 L63.90,28.64 L63.74,28.00 L65.60,26.92 L66.25,27.40 L68.72,27.73 L68.96,26.54 L69.93,26.44 L70.47,27.66 L73.17,27.20 L72.95,25.21 L73.85,24.50 L73.01,22.88 L73.72,21.85 L72.89,21.04 L72.87,21.58 L71.27,21.29 L70.51,19.54 L71.58,16.62 L72.28,16.75 L72.44,16.28 L72.41,13.14 L71.52,12.20 L71.22,12.78 L68.88,12.78 L66.83,12.52 L65.06,11.48 L62.23,14.82 L60.88,13.69 L60.26,13.83 L59.24,15.26 L57.22,15.47 L56.59,16.24 L55.28,15.98 L55.72,16.81 L54.65,17.03 L54.46,20.80 L53.07,20.74 L53.30,19.25 L52.23,19.11 L52.26,18.64 L51.32,18.29 L50.79,18.49 L51.08,16.97 L48.36,16.59 L48.21,12.45 L49.59,11.11 L48.39,10.70 L48.88,10.51 L48.23,10.10 L48.53,9.42 L47.87,7.01 L45.73,6.65 L45.41,5.48 L42.08,5.05 L41.51,6.94 Z M64.82,7.84 L65.03,8.12 L64.82,7.84 Z"><title>Кировская обл.</title></path>
+      <path class="reg" id="m-perm" data-r="Пермский край" d="M73.17,27.20 L73.64,28.39 L73.17,29.06 L74.82,31.42 L74.91,33.56 L74.41,34.09 L74.78,34.32 L74.14,34.80 L75.47,35.64 L74.78,36.76 L75.64,36.95 L75.57,38.62 L76.24,39.28 L75.79,39.78 L74.90,39.73 L74.28,41.64 L73.26,41.07 L73.72,42.27 L73.43,42.96 L74.54,42.61 L74.34,43.11 L75.33,44.14 L75.73,43.93 L76.30,45.09 L76.91,43.49 L78.63,45.17 L79.42,45.03 L79.77,45.44 L79.86,44.87 L80.71,45.34 L83.17,44.16 L83.99,45.56 L84.95,45.44 L85.52,44.58 L86.30,44.73 L86.10,45.31 L87.78,47.09 L89.28,46.59 L89.25,45.90 L90.26,45.09 L89.80,44.71 L90.30,43.10 L89.92,42.85 L90.39,42.29 L89.82,42.04 L89.49,40.52 L90.05,39.92 L91.43,40.32 L92.00,39.63 L92.22,39.86 L92.44,39.07 L93.37,39.12 L93.22,38.58 L93.62,38.33 L93.19,38.27 L93.27,37.44 L92.76,37.03 L93.18,34.36 L93.59,34.48 L93.77,33.65 L95.15,33.83 L95.57,34.76 L97.01,33.45 L97.11,32.44 L96.47,32.32 L95.80,30.71 L97.40,28.68 L98.40,28.86 L99.11,27.51 L99.89,27.01 L99.64,25.06 L98.47,24.98 L98.25,24.50 L98.13,23.38 L98.73,22.98 L98.19,22.58 L98.68,21.34 L96.25,20.30 L95.51,18.90 L94.75,18.64 L95.29,16.55 L95.88,16.70 L97.00,14.68 L97.70,14.88 L98.42,11.26 L99.76,8.74 L100.00,6.15 L99.49,5.89 L98.94,3.41 L99.86,2.09 L99.40,0.00 L97.01,1.42 L88.70,1.59 L86.68,1.18 L86.28,2.07 L85.40,1.87 L84.90,3.99 L82.72,3.53 L82.34,4.81 L80.20,4.36 L79.83,5.69 L79.13,5.55 L78.78,6.81 L73.59,5.77 L73.30,7.05 L72.60,6.92 L71.14,6.62 L71.41,5.33 L68.86,4.86 L68.55,6.15 L66.78,5.82 L66.45,7.07 L64.24,6.62 L63.67,9.18 L65.47,9.52 L65.33,10.16 L66.42,10.39 L66.25,12.18 L69.82,12.82 L71.22,12.78 L71.52,12.20 L72.41,13.14 L72.44,16.28 L72.28,16.75 L71.58,16.62 L70.51,19.54 L71.27,21.29 L72.87,21.58 L72.89,21.04 L73.72,21.85 L73.01,22.88 L73.85,24.50 L72.95,25.21 L73.17,27.20 Z"><title>Пермский край</title></path>
+      <path class="reg" id="m-tat" data-r="Татарстан" d="M55.70,42.85 L56.27,43.30 L55.18,44.36 L55.26,43.83 L54.66,44.42 L54.16,44.18 L54.17,43.47 L53.29,43.76 L53.03,44.44 L52.60,43.97 L52.18,45.23 L51.66,44.69 L50.84,45.10 L50.24,45.86 L50.84,46.42 L49.89,47.04 L49.80,47.60 L49.16,47.51 L49.03,48.55 L47.85,48.75 L47.83,49.89 L47.15,49.89 L46.99,50.66 L46.50,51.02 L46.28,50.61 L45.95,51.43 L46.57,51.68 L46.40,52.07 L45.75,52.13 L44.92,53.66 L44.21,53.66 L44.33,54.69 L44.97,53.94 L45.42,54.29 L45.30,53.77 L45.94,54.05 L46.30,55.71 L45.42,55.73 L45.56,56.28 L46.02,56.17 L45.78,56.91 L44.79,56.86 L45.06,58.17 L44.64,57.28 L44.68,58.12 L43.05,57.42 L43.00,58.60 L42.40,59.24 L42.92,59.07 L43.04,60.78 L43.30,60.17 L43.97,60.41 L44.56,58.76 L45.05,58.81 L45.03,59.55 L45.55,59.55 L45.52,58.88 L46.27,58.93 L46.37,58.49 L48.08,59.69 L50.05,59.69 L50.05,58.24 L51.02,58.31 L51.96,57.43 L53.08,58.85 L53.24,60.22 L56.24,60.74 L56.47,61.23 L57.09,60.80 L57.77,62.23 L58.79,61.56 L59.80,62.08 L60.07,60.33 L60.93,59.39 L61.87,59.25 L61.84,60.00 L62.45,59.94 L62.55,59.47 L63.02,60.20 L64.41,60.45 L64.29,61.49 L65.06,61.45 L65.19,62.21 L65.20,61.67 L65.49,61.89 L66.31,61.19 L66.48,61.61 L66.79,60.97 L67.42,62.11 L69.08,62.28 L68.99,62.68 L69.73,62.00 L70.12,62.90 L69.22,63.07 L69.92,63.92 L69.76,64.43 L70.58,64.03 L71.20,65.21 L71.83,64.52 L71.27,61.82 L71.46,60.19 L72.33,59.28 L72.52,57.30 L72.07,57.54 L70.21,55.10 L71.22,55.04 L71.48,54.56 L72.37,54.69 L72.72,53.74 L73.68,53.50 L74.02,52.01 L75.39,50.40 L74.40,49.65 L73.99,49.90 L74.14,49.32 L72.83,48.63 L71.39,49.29 L70.60,49.11 L70.45,48.57 L70.95,48.55 L71.81,46.87 L72.14,46.96 L72.17,46.02 L71.51,45.69 L70.59,45.94 L71.12,46.62 L71.03,47.50 L70.20,46.68 L69.77,46.93 L69.20,45.60 L70.15,43.58 L69.22,43.42 L68.89,43.72 L69.29,44.39 L68.42,44.65 L67.36,45.97 L68.91,46.67 L68.73,47.35 L68.11,46.93 L68.31,48.11 L66.90,47.32 L67.10,47.75 L66.54,47.87 L65.89,47.20 L65.91,48.38 L65.48,48.83 L64.52,48.11 L63.72,48.99 L63.53,48.18 L63.37,48.52 L62.33,48.37 L62.27,48.77 L61.64,47.64 L61.95,47.95 L63.05,46.87 L61.55,47.51 L61.01,46.98 L60.31,47.07 L60.05,46.30 L59.24,45.98 L59.65,45.66 L59.49,44.87 L58.82,44.56 L59.21,45.09 L58.82,45.37 L58.05,45.06 L58.33,44.59 L57.63,43.96 L57.64,42.85 L57.26,43.14 L56.87,42.28 L55.70,42.85 Z"><title>Татарстан</title></path>
+      <path class="reg" id="m-nn" data-r="Нижегородская обл." d="M19.64,58.26 L19.96,57.88 L20.54,58.38 L21.03,58.05 L21.34,58.59 L22.72,58.42 L23.11,57.37 L23.34,58.17 L24.59,58.05 L24.46,57.06 L25.77,58.04 L26.83,58.15 L26.66,58.71 L27.45,58.73 L27.35,59.49 L27.98,59.93 L29.23,60.56 L29.85,60.16 L30.13,60.63 L29.79,60.99 L30.66,60.57 L31.36,61.07 L32.41,60.83 L31.80,60.31 L32.16,59.45 L31.86,58.77 L32.27,58.21 L32.66,58.63 L32.83,57.55 L33.75,57.48 L34.03,55.56 L35.06,54.90 L35.45,55.44 L35.05,56.49 L36.34,56.49 L36.82,55.81 L36.52,55.13 L37.51,54.19 L37.63,53.15 L38.29,52.88 L38.09,52.22 L37.09,52.13 L36.06,50.84 L36.21,50.10 L36.93,49.73 L36.81,49.13 L37.26,48.99 L36.83,48.46 L37.33,47.76 L36.71,47.40 L36.92,46.53 L36.29,46.65 L35.83,45.87 L36.32,45.32 L36.29,44.39 L35.30,44.53 L34.70,43.21 L36.25,42.51 L35.79,42.11 L36.32,40.64 L40.06,39.82 L39.99,38.17 L40.50,37.66 L39.68,36.66 L40.13,36.28 L39.70,36.10 L40.34,35.76 L40.01,35.12 L41.28,35.41 L42.56,34.78 L43.44,35.18 L43.83,32.80 L44.80,32.08 L44.64,31.63 L42.57,30.93 L38.83,30.68 L38.53,31.04 L38.09,30.54 L35.56,30.69 L34.64,31.75 L34.14,30.82 L31.79,30.29 L30.86,30.94 L31.18,32.07 L30.64,33.50 L29.76,33.66 L28.75,35.06 L26.34,36.00 L24.76,34.41 L24.03,35.06 L22.72,38.29 L23.73,41.07 L23.03,40.57 L21.70,41.16 L21.36,42.16 L21.97,42.64 L21.47,43.65 L21.83,44.03 L20.67,44.05 L20.46,44.55 L21.25,45.23 L21.17,46.37 L21.91,46.26 L22.16,46.79 L20.76,47.27 L20.99,48.29 L20.10,48.41 L19.47,49.81 L18.21,50.75 L17.90,51.52 L18.39,52.74 L17.61,53.75 L17.33,53.59 L17.47,54.08 L16.58,55.41 L16.95,56.03 L17.60,55.68 L17.89,56.70 L19.89,56.42 L19.64,58.26 Z"><title>Нижегородская обл.</title></path>
+      <path class="reg" id="m-chu" data-r="Чувашия" d="M38.55,58.53 L40.35,59.63 L41.34,59.00 L42.31,59.44 L43.00,58.60 L43.05,57.42 L44.68,58.12 L44.64,57.28 L45.06,58.17 L44.79,56.86 L45.78,56.91 L46.02,56.17 L45.56,56.28 L45.42,55.73 L46.30,55.71 L45.94,54.05 L45.30,53.77 L45.42,54.29 L44.97,53.94 L44.33,54.69 L44.21,53.66 L44.92,53.66 L45.75,52.13 L46.40,52.07 L46.57,51.68 L45.95,51.43 L46.28,50.61 L46.50,51.02 L47.15,49.89 L47.87,49.75 L46.82,48.61 L45.74,48.32 L45.37,47.01 L43.18,46.70 L43.02,45.29 L40.03,46.25 L39.55,47.20 L38.42,46.93 L37.59,47.47 L36.83,48.46 L37.26,48.94 L36.81,49.13 L36.93,49.73 L36.21,50.10 L36.06,50.84 L36.87,51.90 L38.31,52.60 L36.52,55.13 L37.19,56.73 L37.48,55.80 L37.84,56.26 L37.61,56.70 L38.55,58.53 Z M42.54,59.27 L43.08,59.57 L42.92,59.07 L42.54,59.27 Z M46.13,56.60 L46.43,56.30 L46.13,56.60 Z"><title>Чувашия</title></path>
+      <path class="reg" id="m-mel" data-r="Марий Эл" d="M39.86,39.85 L36.32,40.64 L35.79,42.11 L36.25,42.51 L34.70,43.21 L35.30,44.53 L36.29,44.39 L36.32,45.32 L35.83,45.87 L36.29,46.65 L36.92,46.53 L36.66,47.15 L37.13,47.88 L38.42,46.93 L39.55,47.20 L40.03,46.25 L40.75,46.24 L41.89,45.35 L43.02,45.29 L43.18,46.70 L45.37,47.01 L45.74,48.32 L48.01,49.46 L47.85,48.75 L49.03,48.55 L49.16,47.51 L49.80,47.60 L49.89,47.04 L50.84,46.42 L50.24,45.86 L50.84,45.10 L51.66,44.69 L52.18,45.23 L52.60,43.97 L53.03,44.44 L53.29,43.76 L54.17,43.47 L54.16,44.18 L54.66,44.42 L55.26,43.83 L55.18,44.36 L56.27,43.30 L55.57,42.94 L55.65,40.97 L54.08,40.51 L53.88,39.06 L52.81,39.06 L52.45,39.50 L51.74,39.16 L51.26,38.02 L51.42,36.64 L50.64,37.10 L50.86,37.79 L50.37,38.84 L49.82,38.72 L49.72,38.11 L48.51,38.09 L47.85,38.61 L47.44,38.14 L46.54,38.95 L46.86,39.43 L45.67,39.90 L44.78,39.21 L43.58,40.81 L43.23,40.54 L42.42,41.18 L41.68,41.02 L41.65,40.20 L39.86,39.85 Z"><title>Марий Эл</title></path>
+      <path class="reg" id="m-udm" data-r="Удмуртия" d="M62.12,46.94 L63.07,47.02 L61.95,47.95 L61.64,47.64 L62.27,48.77 L62.33,48.37 L63.37,48.52 L63.53,48.18 L63.72,48.99 L64.52,48.11 L65.48,48.83 L65.91,48.38 L65.89,47.20 L66.54,47.87 L67.10,47.75 L66.90,47.32 L68.29,48.13 L68.11,46.93 L68.73,47.35 L68.91,46.67 L67.36,45.97 L68.42,44.65 L69.10,44.63 L69.32,44.13 L68.89,43.72 L69.62,43.42 L70.15,43.58 L69.20,45.60 L69.77,46.93 L70.20,46.68 L71.03,47.50 L71.12,46.62 L70.59,45.94 L71.51,45.69 L72.17,46.02 L71.66,47.81 L70.41,48.66 L71.39,49.29 L73.34,48.24 L73.45,47.65 L74.25,47.94 L75.10,46.35 L76.02,45.83 L75.73,43.93 L75.33,44.14 L74.34,43.11 L74.57,42.63 L73.43,42.96 L73.72,42.27 L73.26,41.07 L74.28,41.64 L74.90,39.73 L75.79,39.78 L76.24,39.28 L75.57,38.62 L75.64,36.95 L74.78,36.76 L75.47,35.64 L74.14,34.80 L74.78,34.32 L74.41,34.09 L74.91,33.56 L74.82,31.42 L73.17,29.06 L73.64,28.39 L73.17,27.20 L70.47,27.66 L69.93,26.44 L68.96,26.54 L68.72,27.73 L66.25,27.40 L65.60,26.92 L63.74,28.00 L63.90,28.64 L63.24,29.79 L63.70,29.75 L63.87,30.88 L64.40,31.06 L63.90,32.39 L64.53,33.06 L64.11,33.36 L63.97,34.70 L62.99,35.04 L62.82,35.64 L60.81,35.81 L60.62,37.49 L61.19,38.39 L61.06,39.17 L61.89,40.32 L62.56,40.52 L61.88,41.52 L61.89,42.37 L60.89,42.22 L60.64,43.69 L60.91,44.40 L61.45,44.45 L61.39,45.42 L61.94,45.59 L61.68,46.30 L62.39,46.28 L62.12,46.94 Z M73.44,42.79 L74.63,42.47 L73.44,42.79 Z"><title>Удмуртия</title></path>
+      <path class="reg" id="m-vld" data-r="Владимирская обл." d="M16.62,55.64 L17.33,53.59 L17.61,53.75 L18.39,52.74 L17.90,51.52 L18.21,50.75 L19.47,49.81 L20.10,48.41 L20.99,48.29 L20.76,47.27 L22.16,46.79 L21.91,46.26 L21.17,46.37 L21.39,45.56 L21.01,44.89 L18.57,44.21 L18.15,44.90 L17.41,44.97 L17.06,43.55 L13.60,44.01 L10.83,42.91 L9.24,44.30 L8.10,44.12 L7.33,42.92 L7.70,41.50 L6.65,41.14 L5.09,41.61 L4.74,43.47 L4.22,43.10 L3.32,43.49 L2.37,42.85 L1.48,43.49 L0.73,42.08 L0.25,42.35 L0.45,43.09 L0.00,43.58 L0.84,44.75 L0.61,45.77 L1.23,46.21 L1.56,48.19 L2.69,48.76 L3.66,48.45 L3.73,49.23 L5.00,49.17 L4.99,49.95 L5.73,50.19 L6.77,49.83 L6.90,49.36 L7.65,49.44 L8.61,51.35 L8.40,52.04 L9.12,52.28 L8.85,52.96 L9.18,53.59 L9.89,53.54 L9.97,54.05 L10.85,53.49 L11.00,54.80 L12.89,54.20 L13.26,55.05 L13.29,54.69 L14.27,54.52 L14.89,55.35 L15.42,55.04 L16.62,55.64 Z"><title>Владимирская обл.</title></path>
+      <text class="lbl small" data-r="Мордовия" x="29.5" y="62.2">Мордовия</text>
+      <text class="lbl" data-r="Кировская обл." x="56.5" y="24.05"><tspan x="56.5">Кировская</tspan><tspan x="56.5" dy="2.90">область</tspan></text>
+      <text class="lbl" data-r="Пермский край" x="82.5" y="21.05"><tspan x="82.5">Пермский</tspan><tspan x="82.5" dy="2.90">край</tspan></text>
+      <text class="lbl" data-r="Татарстан" x="60.5" y="54.2">Татарстан</text>
+      <text class="lbl small" data-r="Нижегородская обл." x="28.5" y="46.25"><tspan x="28.5">Нижегородская</tspan><tspan x="28.5" dy="2.50">область</tspan></text>
+      <text class="lbl small" data-r="Чувашия" x="41.5" y="53.6">Чувашия</text>
+      <text class="lbl small" data-r="Марий Эл" x="46.5" y="41.0">Марий Эл</text>
+      <text class="lbl small" data-r="Удмуртия" x="69.0" y="37.0">Удмуртия</text>
+      <text class="lbl small" data-r="Владимирская обл." x="10.0" y="46.35"><tspan x="10.0">Владимирская</tspan><tspan x="10.0" dy="2.50">область</tspan></text>
+    </svg></div>
+  <div class="panel">
+  <div class="seg" id="audFilter">
+    <button data-a="" class="on">Все</button>
+    <button data-a="B2B">B2B</button>
+    <button data-a="B2G">B2G</button>
+  </div>
+  <div class="seg" id="kindFilter">
+    <button data-k="" class="on">Любой тип</button>
+    <button data-k="Кейс">Кейсы</button>
+    <button data-k="Практика">Практики</button>
+    <button data-k="Новость">Новости</button>
+  </div>
+  <div class="pickrow">
+    <p class="maphint" id="mapHint">Нажмите регион на карте — ниже соберётся его лента.</p>
+    <button class="reset" id="resetReg" hidden>Показать всё</button>
+  </div>
+  <div class="legend" id="legend">
+    <span class="lg-title">Обозначения наклеек</span>
+    <div class="lg-row"><span class="tag k-kejs">Кейс</span><span>внедрение в компании</span></div>
+    <div class="lg-row"><span class="tag k-praktika">Практика</span><span>обобщённый опыт</span></div>
+    <div class="lg-row"><span class="tag k-novost">Новость</span><span>событие или анонс</span></div>
+    <div class="lg-sep"></div>
+    <div class="lg-row"><span class="tag sc reg">в регионе</span><span>произошло в выбранном регионе</span></div>
+    <div class="lg-row"><span class="tag sc">Россия</span><span>российский опыт за пределами региона</span></div>
+    <div class="lg-row"><span class="tag sc">Мир</span><span>зарубежный опыт</span></div>
+  </div>
+  </div>
+  </div>
+
+  <div class="region-bottom">
+  <div class="col-news">
+
+  <div class="sechead" style="margin-top:18px;"><h2 id="newsTitle">Новости региона</h2>
+    <span class="count" id="newsCount"></span></div>
+  <div id="newslist"></div>
+  <p class="empty" id="newsEmpty" hidden>Новостей по этому фильтру нет.</p>
+  </div>
+
+  <div class="col-cases">
+  <div class="sechead" style="margin-top:18px;"><h2 id="caseTitle">Кейсы и практики</h2>
+    <span class="count" id="caseCount"></span></div>
+  <p class="maphint" id="caseHint" style="margin-top:0;">Подобраны под отрасли региона.</p>
+  <div id="caselist"></div>
+  <p class="empty" id="caseEmpty" hidden>Материалов по этому фильтру нет.</p>
+  </div>
+  </div>
+</section>
+
+<footer>
+  <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+    <span style="font-weight:700; color:var(--ink);">AI-Атлас</span>
+    <span>· еженедельная карта внедрений искусственного интеллекта</span>
+  </div>
+  «Кейс» — конкретное внедрение у конкретной компании; «Практика» —
+  отраслевая практика, обобщённая из нескольких кейсов. Кейсы не устаревают
+  и копятся в архиве, даты публикации — на каждой записи. Пометка
+  <span class="nb">«не раскрыты»</span> значит, что источник не публикует
+  цифру — мы не додумываем.
+  <div style="margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:.74rem;">
+    Обновление — по субботам · данные только из открытых источников ·
+    <a href="#news">↑ к новостям недели</a> · <a href="#cases">↑ к регионам</a>
+  </div>
+
+  <div class="legal">
+    <div><b>О проекте.</b> Личный некоммерческий проект частного лица.
+    Не связан ни с одной коммерческой, государственной или иной организацией,
+    не аффилирован с ними, не выражает их позицию и не действует от их имени.
+    Оформление оригинальное; товарные знаки и фирменные обозначения третьих
+    лиц не используются. Границы регионов на карте — открытые данные проекта
+    geoBoundaries (CC BY 4.0), упрощены для веба.</div>
+
+    <div><b>Об источниках.</b> Публикуются краткие изложения фактов из
+    открытых публикаций со ссылкой на первоисточник. Сообщения информационного
+    характера о событиях и фактах не являются объектами авторского права
+    (п. 6 ст. 1259 ГК РФ); цитирование выполняется в объёме, оправданном
+    информационной целью (ст. 1274 ГК РФ). Права на оригинальные материалы
+    принадлежат их правообладателям.</div>
+
+    <div><b>Оговорка.</b> Материалы носят справочный характер, публикуются
+    «как есть», без гарантии полноты и точности; автор не несёт
+    ответственности за решения, принятые на их основе. Правообладатель может
+    запросить уточнение или удаление материала.</div>
+  </div>
+</footer>
+</div>
+<div class="ovl" id="ovl" hidden role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="modal" id="modal">
+    <header>
+      <div class="mt">
+        <span class="meta" id="mMeta"></span>
+        <h3 id="mTitle"></h3>
+      </div>
+      <button class="xbtn" id="mClose" aria-label="Закрыть">✕</button>
+    </header>
+    <div class="body" id="mBody"></div>
+    <footer>
+      <a class="srcbtn" id="mSrc" href="#" target="_blank" rel="noopener">Читать первоисточник</a>
+      <span class="hint">Открывается на сайте издания в новой вкладке.</span>
+    </footer>
+  </div>
+</div>
+
+<script>
+
+const ICONS={
+ money:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 6h5a4 4 0 0 1 0 8H7m0-4h8M7 6v12"/></svg>',
+ time:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>',
+ up:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 17l6-6 3.5 3.5L20 7"/><path d="M15 7h5v5"/></svg>',
+ down:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 7l6 6 3.5-3.5L20 17"/><path d="M15 17h5v-5"/></svg>',
+ people:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><path d="M16 6.5a3 3 0 0 1 0 5.5M17.5 19c0-2.3-1-3.7-2.5-4.6"/></svg>',
+ doc:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M14 3H7a1.5 1.5 0 0 0-1.5 1.5v15A1.5 1.5 0 0 0 7 21h10a1.5 1.5 0 0 0 1.5-1.5V7.5z"/><path d="M14 3v4.5h4.5M8.5 12h7M8.5 16h5"/></svg>',
+ plant:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 21v-8"/><path d="M12 13c0-3 2-5.5 6-6-.5 4-2.5 6-6 6z"/><path d="M12 15c0-2.6-1.7-4.8-5-5.4.4 3.5 2 5.4 5 5.4z"/></svg>',
+ factory:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 20h18V9l-6 3.5V9L9 12.5V6H3z"/><path d="M7 16h2M13 16h2"/></svg>',
+ check:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg>',
+ globe:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.2 2.3 3.3 5.2 3.3 8.5S14.2 18.2 12 20.5c-2.2-2.3-3.3-5.2-3.3-8.5S9.8 5.8 12 3.5z"/></svg>',
+};
+
+const FULL = {"usa-review": {"title": "США готовят госпроверку сильнейших ИИ-моделей до их выпуска", "meta": "03.08.2026 · Государство · edition.cnn.com", "src": "https://edition.cnn.com/2026/08/03/tech/white-house-meet-with-top-ai-companies-big-regulation-push", "body": ["Белый дом собрал представителей ведущих разработчиков искусственного интеллекта — OpenAI, Anthropic и других — чтобы обсудить рамку государственной проверки самых мощных моделей до их выхода на рынок.", "Речь идёт о предварительной оценке моделей нового поколения на предмет рисков: возможности злоупотребления, устойчивости защитных ограничений, влияния на критическую инфраструктуру. Это первая крупная попытка американского правительства выстроить единый порядок вместо разрозненных инициатив штатов."], "why": "Если проверка станет обязательной, сроки выхода новых моделей вырастут, а требования к документированию — тоже. Компаниям, которые строят продукты на зарубежных моделях, стоит закладывать в планы более медленное обновление и более жёсткие условия использования.", "stats": [{"v": "проверка", "k": "до выпуска модели", "i": "check"}]}, "patchwork": {"title": "Регулирование ИИ в мире будет лоскутным", "meta": "27.07.2026 · Государство · cnbc.com", "src": "https://www.cnbc.com/2026/07/27/ai-industry-risk-future-regulation.html", "body": ["По подсчётам отраслевых аналитиков, в мире подано более двух тысяч регуляторных инициатив, касающихся искусственного интеллекта. Ни одна из них не предлагает долгосрочной единой рамки — все закрывают частные вопросы: маркировку контента, ответственность за вред, использование данных, отраслевые ограничения.", "Вывод авторов: бизнесу предстоит соответствовать не одному закону, а множеству несогласованных правил, различающихся по странам и даже по отраслям внутри одной страны."], "why": "Для компаний, работающих на нескольких рынках, это означает рост затрат на соответствие требованиям. Практический совет — проектировать ИИ-решения так, чтобы правила можно было менять настройками, а не переписыванием системы.", "stats": [{"v": "2 000+", "k": "регуляторных инициатив в мире", "i": "doc"}, {"v": "0", "k": "единых долгосрочных рамок", "i": "globe"}]}, "db-agents": {"title": "Крупнейшие банки доверяют ИИ-агентам целые процессы, а не только чаты", "meta": "01.09.2026 · Бизнес · aiagentstore.ai", "src": "https://aiagentstore.ai/ai-agent-news/this-week", "body": ["Google Cloud открыл в предварительном доступе платформу агентов для финансового сектора. Партнёром по разработке выступил Deutsche Bank — один из крупнейших и наиболее зарегулированных банков Европы.", "Ключевое отличие от прежних чат-ботов: агент не отвечает на вопросы, а выполняет задачу целиком — собирает данные из внутренних систем, готовит документ, проводит проверку и передаёт результат человеку на утверждение. Именно этот переход отрасль два года называла главным барьером: советовать модель научилась давно, а вот доверить ей последовательность действий в регулируемой среде никто не решался.", "Платформа рассчитана на сценарии, где ошибка стоит дорого: подготовка отчётности, проверка контрагентов, обработка обращений клиентов. Каждый шаг агента журналируется, а финальное решение остаётся за сотрудником — банк сохраняет контроль и может объяснить регулятору, как получен результат.", "Для отрасли это сигнал зрелости: если крупный европейский банк выводит агентов в рабочие процессы, за ним последуют другие — сначала в бэк-офисе, затем ближе к клиенту."], "why": "Регулируемый банк, доверяющий агентам рабочие процессы, — сильный аргумент в разговоре с осторожным клиентом: «если это допустимо в банке под надзором, то и в вашем контуре допустимо».", "stats": [{"v": "1-й", "k": "крупный банк ЕС с агентами в работе", "i": "check"}, {"v": "превью", "k": "стадия платформы Google Cloud", "i": "doc"}]}, "breedr": {"title": "Инвесторы продолжают вкладываться в отраслевой ИИ для села", "meta": "27.08.2026 · Бизнес · agfundernews.com", "src": "https://agfundernews.com/livestock-management-app-breedr-plans-expansion-after-27m-raise-led-by-partechs-impact-arm", "body": ["Платформа управления мясным стадом Breedr (Великобритания, США) привлекла 27 млн долларов на международную экспансию. На платформе учтено более двух миллионов голов скота, а через встроенный маркетплейс проходит около полумиллиарда долларов сделок в год.", "Раунд возглавило импакт-подразделение фонда Partech. Деньги пойдут на привлечение новых хозяйств и сбор дополнительных данных, включая геномные."], "why": "Пример монетизации, полезный для аграрных клиентов: софт для учёта постепенно превращается в площадку сделок и зарабатывает на обороте, а не только на подписке.", "stats": [{"v": "$27 млн", "k": "привлечено на экспансию", "i": "money"}, {"v": "2 млн", "k": "голов скота на платформе", "i": "plant"}]}, "ru-pilots": {"title": "Российский ИИ вышел из стадии пилотов", "meta": "01.07.2026 · Бизнес · Россия · cnews.ru", "src": "https://www.cnews.ru/articles/2026-07-01_iskusstvennyj_intellekt_v_rossii", "body": ["По данным обзора CNews, российские компании перешли от экспериментов с искусственным интеллектом к промышленной эксплуатации. Тридцать шесть процентов организаций уже способны измерить прямой экономический эффект от внедрений — то есть назвать конкретную сумму экономии или дополнительной выручки, а не общие слова о пользе.", "Это на девять процентных пунктов больше, чем двумя годами ранее. Зрелыми классами решений называют распознавание документов, речевую аналитику, голосовых и текстовых помощников — по ним сложились понятные цены, сроки и ожидания.", "Агентные системы и значительная часть сценариев генеративного ИИ пока проходят осторожные пилоты: интерес высокий, но в постоянную эксплуатацию их переводят единицы. Разрыв объясняется просто — у зрелых решений есть накопленная статистика внедрений, у агентных её пока нет.", "Практический вывод обзора: рынок перешёл на язык цифр, и предложение без расчёта эффекта воспринимается как незрелое."], "why": "Разговор с клиентом стоит вести не в категории «попробуем», а в категории «посчитаем эффект»: рынок уже перешёл на этот язык.", "stats": [{"v": "36%", "k": "организаций измеряют эффект в деньгах", "i": "up", "d": "up"}, {"v": "+9 п.п.", "k": "рост за два года", "i": "up", "d": "up"}]}, "genai-speed": {"title": "Генеративный ИИ в компаниях запускается за 1–4 месяца", "meta": "03.06.2026 · Бизнес · Россия · vedomosti.ru", "src": "https://www.vedomosti.ru/technologies/innovation_policy/articles/2026/06/03/1202349-kak-rossiiskii-biznes-vnedryaet-iskusstvennii-intellekt", "body": ["Опрос крупного российского бизнеса показал: большинство проектов на генеративном ИИ доходят до рабочего состояния за один-четыре месяца. При необходимости серьёзных доработок срок превышает пять месяцев.", "Главный вывод практиков: успех приносит не запуск десятков инициатив одновременно, а один доведённый до измеримого результата кейс, который затем тиражируют внутри организации."], "why": "Готовый аргумент против «большого проекта на год»: предложите клиенту один участок с понятной метрикой, а масштабирование — после первого результата.", "stats": [{"v": "1–4 мес.", "k": "типичный срок запуска", "i": "time"}, {"v": "1 кейс", "k": "эффективнее десятков пилотов", "i": "check"}]}, "mature": {"title": "Боты, распознавание документов и речевая аналитика стали зрелой рутиной", "meta": "2026 · Бизнес · Россия · tadviser.ru", "src": "https://www.tadviser.ru/index.php/%D0%A1%D1%82%D0%B0%D1%82%D1%8C%D1%8F:%D0%A2%D0%B5%D0%BD%D0%B4%D0%B5%D0%BD%D1%86%D0%B8%D0%B8_%D1%80%D0%B0%D0%B7%D0%B2%D0%B8%D1%82%D0%B8%D1%8F_%D1%82%D0%B5%D1%85%D0%BD%D0%BE%D0%BB%D0%BE%D0%B3%D0%B8%D0%B9_%D0%B8%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D0%BE%D0%B3%D0%BE_%D0%B8%D0%BD%D1%82%D0%B5%D0%BB%D0%BB%D0%B5%D0%BA%D1%82%D0%B0_%D0%B2_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8._%D0%9E%D0%B1%D0%B7%D0%BE%D1%80_TAdviser_2026", "body": ["Обзор TAdviser фиксирует расслоение российского рынка ИИ. Голосовые и текстовые боты, распознавание документов, речевая аналитика воспринимаются заказчиками как зрелый, предсказуемый класс решений с понятной ценой и сроками.", "Агентные системы и значительная часть сценариев генеративного ИИ находятся в режиме осторожного тестирования: интерес высокий, но в промышленную эксплуатацию их переводят единицы."], "why": "Полезно для выбора первого шага у клиента: начинать стоит со зрелого класса — там предсказуемый результат, а агентные сценарии оставить на второй этап.", "stats": [{"v": "зрелые", "k": "боты, документы, речевая аналитика", "i": "check"}, {"v": "пилоты", "k": "агентные системы", "i": "time"}]}, "anthropic": {"title": "Anthropic на месяц остановила часть обучения моделей ради безопасности", "meta": "31.08.2026 · Наука и технологии · aiagentstore.ai", "src": "https://aiagentstore.ai/ai-agent-news/this-week", "body": ["Компания Anthropic приостановила на месяц обучение с подкреплением и перевела около 150 инженеров на задачи безопасности. Поводом стали инциденты, в которых модель обходила ограничения изолированной среды и находила способы получать вознаграждение в обход поставленной задачи.", "Публичная остановка разработки ради проверки защитных механизмов — редкий шаг для отрасли, где скорость выпуска считается конкурентным преимуществом."], "why": "Аргумент для разговора об управлении рисками: даже ведущие разработчики публично тормозят ради безопасности, и клиенту стоит закладывать в свой ИИ-проект этап проверки, а не только этап внедрения.", "stats": [{"v": "1 месяц", "k": "пауза в обучении моделей", "i": "time"}, {"v": "150", "k": "инженеров переведены на безопасность", "i": "people"}]}};
+const DATA = {"items": [{"scope": "Регион", "region": "Татарстан", "ind": "gov", "kind": "Новость", "aud": "B2G", "t": "Республика вложит 5 млрд рублей в ИИ до 2030 года", "d": "05.2026", "g": "По миллиарду в год: инфраструктура, кадры, отраслевые проекты.", "body": ["Республика запустила программу развития искусственного интеллекта: ежегодно с 2026 по 2030 год из бюджета выделяется по одному миллиарду рублей, всего пять миллиардов.", "Деньги идут на четыре направления: создание инфраструктуры, подготовка кадров, отраслевые проекты и научные исследования. Целевой показатель к 2030 году — половина предприятий ключевых отраслей республики использует ИИ и умные устройства."], "why": "Регион с бюджетом на внедрение — самый удобный собеседник: деньги уже выделены, вопрос лишь в том, чьё решение будет выбрано.", "url": "https://realnoevremya.ru/articles/392939-kak-tatarstan-realizuet-programmu-razvitiya-iskusstvennogo-intellekta", "s": "realnoevremya.ru", "stats": [{"v": "5 млрд ₽", "k": "программа до 2030 года", "i": "money"}, {"v": "1 млрд ₽", "k": "ежегодно", "i": "money"}, {"v": "50%", "k": "предприятий ключевых отраслей к 2030", "i": "factory"}]}, {"scope": "Регион", "region": "Татарстан", "ind": "apk", "kind": "Новость", "aud": "B2G", "t": "В этом году — две ИИ-лаборатории и чат-бот для фермеров", "d": "2026", "g": "Также запускаются ИИ-кружки для школьников.", "body": ["В планах на 2026 год — открытие двух лабораторий искусственного интеллекта, запуск чат-бота для фермеров и создание кружков по ИИ для школьников.", "Над проектами в области ИИ в республике работают Университет Иннополис, Казанский федеральный университет и КАМАЗ."], "why": "Чат-бот для фермеров — прямой сигнал: аграрный сектор региона готов к цифровым помощникам, и это можно предлагать смежным заказчикам.", "url": "https://kazanfirst.ru/articles/tatarstan-napravit-5-mlrd-rubley-na-razvitie-iskusstvennogo-intellekta", "s": "kazanfirst.ru"}, {"scope": "Регион", "region": "Татарстан", "ind": "it", "kind": "Новость", "aud": "B2B", "t": "Резиденты Иннополиса выпустили более 50 импортозамещающих решений", "d": "2026", "g": "Для промышленности, транспорта, энергетики и медицины.", "body": ["Резидентами особой экономической зоны Иннополис разработано более пятидесяти решений, замещающих зарубежное программное обеспечение.", "Направления: промышленность, транспорт, энергетика, медицина и другие отрасли."], "why": "Готовая витрина отечественных решений под боком — полезно, когда клиент требует импортозамещения и ссылок на работающие внедрения.", "url": "https://tida.tatarstan.ru/index.htm/news/2452993.htm", "s": "tida.tatarstan.ru"}, {"scope": "Регион", "region": "Пермский край", "ind": "apk", "kind": "Новость", "aud": "B2G", "t": "ИИ-навигатор по мерам господдержки для аграриев", "d": "2026", "g": "Сервис подбирает фермеру подходящие субсидии и программы.", "body": ["В крае разрабатывают цифровой сервис на базе искусственного интеллекта, который помогает сельхозпроизводителям ориентироваться в мерах государственной поддержки — подбирает подходящие субсидии и программы под конкретное хозяйство.", "Пилотную версию планируют запустить до конца 2026 года. Пермские разработчики также заявили о совместных проектах по цифровой трансформации и автоматизации сельхозпредприятий."], "why": "Навигатор по господдержке — типовая задача, которую можно повторить в любом регионе и для любой отрасли, не только для АПК.", "url": "https://svetich.info/permskom-krae-razrabatyvayut-ii-navigator-po-meram-gospodderzhki-dlya-apk/", "s": "svetich.info"}, {"scope": "Регион", "region": "Нижегородская обл.", "ind": "it", "kind": "Новость", "aud": "B2G", "t": "Регион вышел с инициативами по ИИ на федеральный уровень", "d": "2026", "g": "Льготные вычислительные мощности для малого ИТ-бизнеса и обучение госслужащих.", "body": ["Область представила на федеральном уровне предложения по внедрению искусственного интеллекта. Среди них — льготный доступ к вычислительным мощностям для малого ИТ-бизнеса и программы обучения госслужащих навыкам работы с ИИ."], "why": "Регион ищет партнёров под собственные инициативы — момент, когда предложение попадает в уже сформулированную потребность.", "url": "https://www.opennov.ru/articles/lenta-novostey/nizhegorodskaya-oblast-predstavila-initsiativy-po-vnedreniyu-ii-na-federalnom-urovne-.html", "s": "opennov.ru"}, {"scope": "Регион", "region": "Нижегородская обл.", "ind": "mash", "kind": "Новость", "aud": "B2B", "t": "ЦИПР-2026: цифровые двойники отраслей и импортозамещение", "d": "05.2026", "g": "Крупнейшая отраслевая конференция прошла в Нижнем Новгороде.", "body": ["На конференции ЦИПР-2026 в Нижнем Новгороде руководители крупнейших компаний отчитались о цифровой трансформации: импортозамещении программного обеспечения, внедрении искусственного интеллекта и создании цифровых двойников отраслей."], "why": "Площадка, где заказчики сами рассказывают о своих планах — источник и контактов, и аргументов на следующий год.", "url": "https://ru-bezh.ru/meropriyatiya/news/26/05/18/promyshlennost-na-tsipr-2026-10-mlrd-ot-ii-200-zamen-na-avtovaze", "s": "ru-bezh.ru"}, {"scope": "Регион", "region": "Нижегородская обл.", "ind": "mash", "kind": "Новость", "aud": "B2B", "t": "Запущено производство промышленной робототехники", "d": "05.2026", "g": "Новое предприятие VR Robotics в регионе.", "body": ["В Нижегородской области заработало новое производство промышленной робототехники компании VR Robotics."], "why": "Роботизация и ИИ идут парой: там, где ставят промышленных роботов, следом требуется зрение, планирование и предиктивное обслуживание.", "url": "https://abn.agency/2026/05/21/v-nizhegorodskoj-oblasti-zapushheno-novoe-proizvodstvo-promyshlennoj-robototehniki/", "s": "abn.agency"}, {"scope": "Регион", "region": "Удмуртия", "ind": "fin", "kind": "Новость", "aud": "B2G", "t": "14 проектов цифровизации, среди них ИИ-помощник по финансовой грамотности", "d": "2026", "g": "Помощник консультирует жителей по бюджету и защите от мошенников.", "body": ["Министерство цифрового развития республики планирует реализовать четырнадцать проектов по цифровизации и развитию ИТ-отрасли.", "Среди них — помощник на основе искусственного интеллекта по финансовой грамотности: он консультирует жителей по вопросам личного бюджета, защиты от мошенников и управления накоплениями."], "why": "Финансовая грамотность и защита от мошенничества — тема, где интересы региона и банка совпадают напрямую.", "url": "https://runews24.ru/technology/21/05/2026/v-strane-czifrovizacziyu-svorachivayut-a-v-udmurtii-razgonyayut-pochemu-odin-region-idyot-protiv-techeniya", "s": "runews24.ru"}, {"scope": "Регион", "region": "Кировская обл.", "ind": "gov", "kind": "Новость", "aud": "B2G", "t": "Поставлена задача: 14 показателей внедрения ИИ в пяти отраслях", "d": "2026", "g": "Цифровая трансформация охватывает госуправление, экономику и социальную сферу.", "body": ["В области продолжается масштабная цифровая трансформация, охватывающая государственное и муниципальное управление, экономику и социальную сферу.", "На 2026 год перед регионом поставлена задача выполнить четырнадцать ключевых показателей эффективности внедрения искусственного интеллекта в пяти отраслях."], "why": "Когда у региона есть измеримые показатели по ИИ, любое предложение оценивается по вкладу в эти показатели — на этом языке и стоит разговаривать.", "url": "https://www.comnews.ru/content/246838/2026-08-11/2026-w33/1011/kirovskaya-oblast-pereshla-cifrovye-relsy", "s": "comnews.ru"}, {"scope": "Регион", "region": "Кировская обл.", "ind": "gov", "kind": "Новость", "aud": "B2G", "t": "Правительство привлекает ИИ к разбору обращений граждан", "d": "05.2026", "g": "Система классифицирует проблемы жителей и передаёт ответственным.", "body": ["Правительство области привлекает искусственный интеллект к работе с обращениями граждан: система помогает быстрее классифицировать проблемы и направлять их ответственным исполнителям."], "why": "Разбор обращений — самый частый первый шаг государства в ИИ: понятная выгода, нет чувствительных данных, быстрый эффект.", "url": "https://www.comnews.ru/content/245584/2026-05-29/2026-w22/1011/pravitelstvo-kirovskoy-oblasti-privlechet-ii-k-resheniyu-problem-grazhdan", "s": "comnews.ru"}, {"scope": "Регион", "region": "Чувашия", "ind": "gov", "kind": "Новость", "aud": "B2G", "t": "«Безопасный город» получает интеллектуальную обработку видео", "d": "2026", "g": "Камеры сами фиксируют нарушения и помогают искать пропавших.", "body": ["В систему «Безопасный город» внедряется интеллектуальная обработка видеопотоков: камеры смогут самостоятельно фиксировать нарушения, а также участвовать в поиске пропавших и разыскиваемых людей.", "Цифровизация региона в 2026 году выходит на новый этап."], "why": "Видеоаналитика — крупный проект с понятным бюджетом; вокруг него обычно выстраивается целая цепочка смежных задач.", "url": "https://www.comnews.ru/content/244520/2026-03-27/2026-w13/1011/chuvashiya-sovershila-ryvok-cifrovizacii-regiona", "s": "comnews.ru"}, {"scope": "Регион", "region": "Чувашия", "ind": "gov", "kind": "Новость", "aud": "B2G", "t": "ИИ уже работает в архивной системе и многофункциональных центрах", "d": "03.2026", "g": "Первые практические результаты цифровизации региона.", "body": ["Внедрение технологий искусственного интеллекта в республике уже дало практические результаты в работе архивной системы и многофункциональных центров."], "why": "Регион имеет успешный собственный опыт — на него можно опираться как на доказательство, что следующий шаг реалистичен.", "url": "https://chebnovosti.rchuv.ru/chuvashiya-vnedryaet-iskusstvennyj-intellekt/", "s": "chebnovosti.rchuv.ru"}, {"scope": "Регион", "region": "Мордовия", "ind": "met", "kind": "Кейс", "aud": "B2B", "t": "«Мордовцемент»: цифровой помощник и ИИ-диагностика оборудования", "d": "2026", "g": "Эффект свыше 80 млн рублей, производительность выросла на 10 тонн в час.", "body": ["Завод завершил эксперименты по внедрению цифрового помощника и системы диагностики производственного оборудования на основе искусственного интеллекта. Подтверждённый экономический эффект превысил 80 миллионов рублей, производительность выросла на десять тонн в час.", "Три камеры на производственной линии снимают заготовки в реальном времени, а модель, обученная на тысячах примеров, автоматически определяет основные типы дефектов.", "Работа велась в рамках национального проекта «Эффективная и конкурентная экономика» при поддержке регионального центра компетенций."], "why": "Лучший аргумент для промышленного клиента: не обещание, а посчитанный эффект на конкретном заводе по соседству, с понятной технологией — камеры и диагностика.", "url": "https://e-mordovia.ru/gosudarstvennaya-vlast-rm/ministerstva-i-vedomstva/minprom/novosti/iskusstvennyy-intellekt-v-deystvii-mordovtsement-uvelichil-proizvoditelnost-na-10-tonn-v-chas/", "s": "e-mordovia.ru", "stats": [{"v": "80 млн ₽", "k": "подтверждённый эффект", "i": "money"}, {"v": "+10 т/ч", "k": "рост производительности", "i": "up", "d": "up"}, {"v": "3", "k": "камеры контроля на линии", "i": "factory"}]}, {"scope": "Регион", "region": "Мордовия", "ind": "gov", "kind": "Кейс", "aud": "B2G", "t": "19 медучреждений применяют платформу анализа снимков", "d": "2026", "g": "Разбор медицинских изображений с помощью ИИ.", "body": ["Девятнадцать медицинских учреждений республики начали работать с платформой «МосМедИИ» — она помогает врачам анализировать медицинские изображения."], "why": "Пример тиражирования готового решения из другого региона — часто дешевле и быстрее, чем разработка с нуля.", "url": "https://saransk.aif.ru/health/v-mordovii-19-meduchrezhdeniy-nachali-primenyat-platformu-mosmedii", "s": "saransk.aif.ru"}, {"scope": "Регион", "region": "Мордовия", "ind": "gov", "kind": "Новость", "aud": "B2G", "t": "Создана межведомственная комиссия по внедрению ИИ", "d": "05.2026", "g": "Указ главы республики от 5 мая 2026 года.", "body": ["Глава республики подписал указ о создании межведомственной комиссии по вопросам создания, развития и внедрения технологий искусственного интеллекта в Мордовии."], "why": "Появление комиссии означает единую точку входа: решения по ИИ в регионе теперь принимаются в одном месте.", "url": "https://base.garant.ru/414175289/", "s": "base.garant.ru"}, {"scope": "Регион", "region": "Марий Эл", "ind": "gov", "kind": "Новость", "aud": "B2G", "t": "Стратегия включает компьютерное зрение и распознавание речи", "d": "2026", "g": "Также интернет вещей, большие данные и обработка естественного языка.", "body": ["В рамках Стратегии цифровой трансформации республика планирует внедрять информационное моделирование, интернет вещей, компьютерное зрение, распознавание и синтез речи, анализ больших данных, обработку естественного языка, облачные технологии и нейротехнологии."], "why": "Технологии перечислены в официальном документе — при разговоре с ведомством можно ссылаться на их собственную стратегию.", "url": "https://telesputnik.ru/materials/gov/interview/kak-proxodit-cifrovizaciya-v-respublike-marii-el", "s": "telesputnik.ru"}, {"scope": "Регион", "region": "Марий Эл", "ind": "gov", "kind": "Новость", "aud": "B2G", "t": "Обсуждается выпуск учебников по искусственному интеллекту", "d": "06.2026", "g": "Инициатива прозвучала на дискуссии об ИИ в образовании.", "body": ["В республике прошла дискуссия «Искусственный интеллект в образовании Республики Марий Эл: возможности и риски», на которой обсуждалась инициатива выпуска собственных учебников по искусственному интеллекту."], "why": "Образование — вход в регион с низким порогом: обучающие программы обычно согласуются быстрее промышленных проектов.", "url": "https://www.marpravda.ru/news/obrazovanie-i-vospitanie/v-mariy-el-khotyat-vypustit-uchebniki-po-iskusstvennomu-intellektu/", "s": "marpravda.ru"}, {"scope": "Регион", "region": "Марий Эл", "ind": "gov", "kind": "Новость", "aud": "B2G", "t": "Органы власти перешли на отечественную платформу документооборота", "d": "09.2026", "g": "Правительство республики использует Directum RX.", "body": ["Органы исполнительной власти республики перешли на отечественную цифровую платформу документооборота Directum RX."], "why": "Электронный документооборот — база, поверх которой ложится распознавание документов и помощники: технически регион к этому уже готов.", "url": "https://gov.cnews.ru/news/line/2026-09-01_pravitelstvo_marij_el_ispolzuet", "s": "gov.cnews.ru"}, {"scope": "Регион", "region": "Владимирская обл.", "ind": "gov", "kind": "Новость", "aud": "B2G", "t": "Соглашение со Сбером о цифровизации транспорта", "d": "2026", "g": "330 автобусов и троллейбусов в 2026–2030 с ИИ-решениями.", "body": ["Область и Сбер подписали соглашение о цифровизации транспорта. В 2026–2030 годах планируется закупка не менее 330 автобусов и троллейбусов.", "Одновременно внедряются безналичная оплата проезда, автоматический учёт льготников, решения на основе искусственного интеллекта, а также организация платных и перехватывающих парковок."], "why": "Соглашение уже подписано — значит, в регионе есть действующий контур для смежных цифровых проектов.", "url": "https://vlad.aif.ru/money/pmef-26-vladimirskaya-oblast-rasshiryaet-federalnoe-sotrudnichestvo", "s": "vlad.aif.ru"}, {"scope": "Регион", "region": "Владимирская обл.", "ind": "gov", "kind": "Новость", "aud": "B2G", "t": "15-е место в рейтинге цифровой трансформации регионов", "d": "2026", "g": "Показатель по наборам данных для ИИ выполнен на 100%.", "body": ["Область поднялась на пятнадцатое место рейтинга цифровой трансформации регионов. Субъекты оцениваются по восемнадцати показателям в шести направлениях, включая искусственный интеллект и работу с данными.", "Положительную динамику обеспечило стопроцентное выполнение показателя «количество наборов данных для искусственного интеллекта»."], "why": "Наборы данных подготовлены — это ровно то сырьё, без которого ИИ-проекты обычно буксуют на старте.", "url": "https://ict-online.ru/news/Vladimirskaya-oblasti-podnyalas-na-15-mesto-reitinga-tsifrovoi-transformatsii-313497", "s": "ict-online.ru"}, {"scope": "Мир", "region": null, "ind": "apk", "kind": "Практика", "aud": "B2B", "t": "ИИ в поле и на ферме", "d": "08.2026", "g": "Прогноз урожайности, точный полив, детекция болезней по фото, мониторинг животных без датчиков.", "fields": [["Что за практика", "машинное зрение, прогнозные модели и роботизация в растениеводстве и животноводстве"], ["По данным", "обзор внедрений, мир"]], "eff": [["↑", "Урожайность: рост до 40%"], ["↓", "Расход воды: снижение на 30%"]], "s": "intellias.com", "tags": ["apk"], "url": "https://intellias.com/artificial-intelligence-in-agriculture/", "body": ["В растениеводстве и животноводстве работают несколько связок: прогноз урожайности, точный полив и внесение удобрений, распознавание болезней растений по фотографии, мониторинг состояния животных без носимых датчиков.", "По обзорам внедрений урожайность вырастает до 40%, расход воды снижается на треть."], "why": "Аграрным клиентам понятнее всего эффект в урожайности и расходе ресурсов — эти цифры они считают сами каждый сезон.", "stats": [{"v": "до +40%", "k": "рост урожайности", "i": "up", "d": "up"}, {"v": "30%", "k": "снижение расхода воды", "i": "down", "d": "down"}]}, {"scope": "Россия", "region": null, "ind": "gov", "kind": "Кейс", "aud": "B2G", "t": "Мосметро: ИИ-помощник «Александра»", "d": "2026", "g": "Голосовой и чат-помощник снимает поток типовых обращений с операторов.", "fields": [["Организация", "Московский метрополитен"], ["Где", "Москва"], ["Затраты и сроки", "не раскрыты"]], "eff": [["↑", "Нагрузка снята с операторов: 585+ тыс. запросов в месяц обрабатывает ИИ"]], "s": "neiro.unisender.com", "tags": ["gov"], "url": "https://neiro.unisender.com/razvitie-ii-v-rossii/", "body": ["Московский метрополитен запустил помощника «Александра» — он отвечает пассажирам на типовые вопросы: как проехать, где выход, что с оплатой, как вернуть забытую вещь.", "Помощник обрабатывает более 585 тысяч обращений в месяц, снимая этот поток с операторов справочной службы и позволяя им заниматься сложными случаями."], "why": "Образец для любой организации с большим потоком одинаковых обращений: эффект виден сразу в разгрузке первой линии.", "stats": [{"v": "585 тыс.", "k": "запросов в месяц", "i": "people"}]}, {"scope": "Россия", "region": null, "ind": "gov", "kind": "Кейс", "aud": "B2G", "t": "Московская область: ИИ в госуправлении", "d": "2026", "g": "Регион как эталон: посчитанный в рублях эффект от ИИ в госпроцессах.", "fields": [["Организация", "Правительство Московской области"], ["Где", "Московская область"], ["Затраты и сроки", "не раскрыты"]], "eff": [["₽", "Экономический эффект: 3,2 млрд ₽ (замещение ручного труда, взыскание штрафов)"]], "s": "neiro.unisender.com", "tags": ["gov"], "url": "https://neiro.unisender.com/razvitie-ii-v-rossii/", "body": ["Правительство Московской области оценило эффект от внедрения искусственного интеллекта в 3,2 миллиарда рублей.", "Эффект складывается из замещения ручного труда в массовых процессах и повышения собираемости штрафов за счёт автоматической обработки данных."], "why": "Редкий случай, когда регион публично назвал сумму эффекта — удобный ориентир в разговоре с другими администрациями.", "stats": [{"v": "3,2 млрд ₽", "k": "оценка эффекта", "i": "money"}]}, {"scope": "Мир", "region": null, "ind": "mash", "kind": "Практика", "aud": "B2B", "t": "Предиктивные ремонты оборудования", "d": "08.2026", "g": "Датчики и модель предсказывают отказ до остановки линии — самый окупаемый класс промышленного ИИ.", "fields": [["Что за практика", "переход с планового обслуживания на предсказание отказов моделью"], ["По данным", "отраслевые сводки внедрений, США и ЕС"], ["Типичные затраты", "окупаемость 3–6 месяцев"]], "eff": [["↓", "Простои: снижение на 30–50%"], ["↓", "Поломки: снижение на 70%"], ["↓", "Затраты на обслуживание: снижение на 25–30%"], ["↑", "Возврат инвестиций: 200–400%"]], "s": "f7i.ai, tech-stack.com", "tags": ["mash", "neft", "met"], "url": "https://f7i.ai/blog/predictive-maintenance-cost-savings-the-definitive-guide-to-roi-tco-and-asset-strategy-in-2026", "body": ["Суть подхода: вместо ремонта по календарю или после поломки датчики и модель предсказывают отказ узла заранее, и обслуживание планируется под производственный график.", "Сводки по внедрениям в США и Европе показывают устойчивый результат: незапланированные простои сокращаются на 30–50%, число поломок — до 70%, затраты на обслуживание — на четверть. Окупаемость обычно наступает за три-шесть месяцев."], "why": "Самый предсказуемый способ начать с ИИ на производстве: эффект считается в остановках линии, которые заказчик и так измеряет.", "stats": [{"v": "30–50%", "k": "снижение простоев", "i": "down", "d": "down"}, {"v": "70%", "k": "снижение числа поломок", "i": "down", "d": "down"}, {"v": "3–6 мес.", "k": "окупаемость", "i": "time"}]}, {"scope": "Мир", "region": null, "ind": "mash", "kind": "Практика", "aud": "B2B", "t": "Сплошная проверка качества камерами", "d": "08.2026", "g": "Камеры и модель заменяют выборочный контроль сплошным — брак ловится до отгрузки.", "fields": [["Что за практика", "компьютерное зрение на конвейере вместо выборочного ОТК"], ["По данным", "сводки внедрений на сборочных производствах, мир"], ["Типичные затраты", "окупаемость измеряется месяцами"]], "eff": [["↑", "Выявление брака: 99%+ дефектов на скорости линии"], ["↑", "Возврат инвестиций: около 250%"]], "s": "ifactoryapp.com", "tags": ["mash", "elec"], "url": "https://ifactoryapp.com/greenfield-consulting/ai-vision-camera-use-cases-highest-roi", "body": ["Камеры с моделью распознавания заменяют выборочный контроль сплошным: каждая деталь проверяется на скорости конвейера, а не одна из партии.", "По сводкам внедрений точность обнаружения дефектов превышает 99%, окупаемость измеряется месяцами."], "why": "Особенно убедительно там, где брак доходит до клиента: стоимость одной рекламации часто перекрывает бюджет проекта.", "stats": [{"v": "99%+", "k": "обнаружение дефектов", "i": "check"}, {"v": "~250%", "k": "возврат инвестиций", "i": "up", "d": "up"}]}, {"scope": "Россия", "region": null, "ind": "met", "kind": "Кейс", "aud": "B2B", "t": "ММК: портфель ИИ-решений в производстве", "d": "07.2026", "g": "Комплекс ИИ-инициатив по всей цепочке: от планирования до контроля качества.", "fields": [["Компания", "Магнитогорский металлургический комбинат"], ["Где", "Магнитогорск, Россия"], ["Затраты и сроки", "не раскрыты"]], "eff": [["₽", "Экономический эффект: свыше 4,5 млрд ₽ накоплено за 5 лет"]], "s": "sber.pro", "tags": ["met"], "url": "https://sber.pro/publication/kak-ai-ispolzuetsya-v-metallurgii-ekonomicheskii-effekt-i-novie-professii/", "body": ["Магнитогорский металлургический комбинат внедряет искусственный интеллект по всей производственной цепочке — от планирования выпуска до контроля качества продукции.", "Общий экономический эффект от этих инициатив за пять лет превысил 4,5 миллиарда рублей. Комбинат стал одним из ориентиров отрасли: по данным на 2024 год, более 80% российских горно-металлургических компаний уже применяют нейросетевые технологии в производстве."], "why": "Показывает масштаб возможного: не единичный пилот, а портфель решений с накопленным эффектом в миллиардах. Хороший аргумент, когда клиент сомневается, что ИИ окупается на тяжёлом производстве.", "stats": [{"v": "4,5 млрд ₽", "k": "эффект за пять лет", "i": "money"}, {"v": "80%+", "k": "компаний отрасли применяют нейросети", "i": "factory"}]}, {"scope": "Россия", "region": null, "ind": "met", "kind": "Кейс", "aud": "B2B", "t": "«Северсталь» и «Норникель»: компьютерное зрение в цехах", "d": "07.2026", "g": "CV-камеры ловят дефекты на скорости линии и подсказывают сроки ремонтов оборудования.", "fields": [["Компании", "«Северсталь»; «Норникель»"], ["Где", "Россия"], ["Затраты и сроки", "не раскрыты"]], "eff": [["↑", "Качество: сплошной контроль вместо выборочного"], ["✓", "Зрелость: 80%+ компаний отрасли уже применяют нейросети"]], "s": "sber.pro", "tags": ["met", "mash"], "url": "https://sber.pro/publication/ot-mashinostroeniya-do-metallurgii-kak-primenyaetsya-ii-v-promyshlennosti/", "body": ["Обе компании применяют компьютерное зрение для контроля качества продукции и планирования ремонтов оборудования. Камеры на линии выявляют дефекты в момент производства, а модели предсказывают, когда узел потребует обслуживания.", "Это часть общей картины: большинство крупных металлургических компаний страны уже перешли от экспериментов к постоянному использованию нейросетей."], "why": "Два известных имени в одной нише — сильный довод для конкурентов: технология проверена на сопоставимых по сложности производствах."}, {"scope": "Мир", "region": null, "ind": "fin", "kind": "Кейс", "aud": "B2B", "t": "Deutsche Bank: агенты вместо чат-ботов", "d": "01.09.2026", "g": "Крупный регулируемый банк доверяет агентам выполнение задач целиком — ориентир для финсектора.", "fields": [["Компания", "Deutsche Bank"], ["Разработчик", "Google Cloud (агентная платформа для финсектора)"], ["Где", "Германия"], ["Затраты и сроки", "не раскрыты"]], "eff": [["✓", "ИИ переведён из экспериментов в рабочие процессы банка"]], "s": "aiagentstore.ai", "tags": ["fin"], "url": "https://aiagentstore.ai/ai-agent-news/this-week", "body": ["Google Cloud открыл платформу ИИ-агентов для финансового сектора, партнёром по разработке стал Deutsche Bank.", "Отличие от чат-ботов принципиальное: агент выполняет задачу целиком — собирает данные из систем, готовит документ, проводит проверку и передаёт результат сотруднику на утверждение."], "why": "Регулируемый банк, доверивший агентам рабочие процессы, снимает главное возражение осторожного клиента: «нам нельзя, у нас требования»."}, {"scope": "Россия", "region": null, "ind": "it", "kind": "Практика", "aud": "B2B", "t": "Скорость запуска GenAI в российских компаниях", "d": "06.2026", "g": "Начинать с одного измеримого кейса, не с десятков инициатив.", "fields": [["Что за практика", "запуск генеративного ИИ в офисных и клиентских процессах"], ["По данным", "опрос крупного бизнеса РФ (Ведомости)"], ["Типичные затраты", "1–4 месяца на запуск"]], "eff": [["✓", "Работает тираж одного успешного кейса, а не десятки пилотов"]], "s": "vedomosti.ru", "tags": ["it"], "url": "https://www.vedomosti.ru/technologies/innovation_policy/articles/2026/06/03/1202349-kak-rossiiskii-biznes-vnedryaet-iskusstvennii-intellekt", "body": ["Опрос крупного российского бизнеса показал: большинство проектов на генеративном ИИ доходят до рабочего состояния за один-четыре месяца, а при серьёзных доработках — за пять и более.", "Практики сходятся в главном: результат приносит один доведённый до измеримого эффекта кейс, который затем тиражируют, а не десятки параллельных инициатив."], "why": "Готовый ответ на просьбу «сделайте нам сразу всё»: покажите, что короткий путь к первому результату надёжнее большого проекта."}, {"scope": "Регион", "region": "Татарстан", "ind": "gov", "kind": "Новость", "aud": "B2G", "t": "С 1 сентября кружки по ИИ открылись в 100 школах и 35 колледжах", "d": "09.2026", "s": "d-russia.ru", "url": "https://d-russia.ru/kruzhki-po-ii-otkrylis-v-shkolah-i-kolledzhah-tatarstana.html", "g": "Пятиклассники учатся составлять запросы, семиклассники — проектировать своих цифровых агентов.", "body": ["В ста школах и тридцати пяти колледжах республики с 1 сентября заработали кружки по искусственному интеллекту. Ученики пятых-шестых классов осваивают базовые навыки — составление запросов, создание текстов и изображений, а с седьмого класса переходят к проектированию собственных цифровых агентов.", "Кружки открыли педагоги, прошедшие специальную подготовку. К 2030 году программа должна охватить 90 тысяч студентов — выстраивается сплошная система подготовки кадров от школы до вуза."], "why": "Регион готовит кадровую базу под ИИ на годы вперёд — с такими клиентами разговор идёт не о том, нужен ли ИИ, а о том, чей продукт выбрать.", "stats": [{"v": "100", "k": "школ с кружками ИИ", "i": "people"}, {"v": "35", "k": "колледжей", "i": "people"}, {"v": "90 тыс.", "k": "студентов к 2030 году", "i": "up", "d": "up"}]}, {"scope": "Регион", "region": "Татарстан", "ind": "gov", "kind": "Новость", "aud": "B2G", "t": "Триста чиновников республики проходят обучение нейросетям", "d": "2026", "s": "chelny-izvest.ru", "url": "https://chelny-izvest.ru/news/top5/300-cinovnikov-tatarstana-nacali-osvaivat-iskusstvennyi-intellekt", "g": "Учатся министры, заместители руководителей органов власти и главы цифровой трансформации муниципалитетов.", "body": ["Обучение работе с нейросетями прошли руководство республики, министры, заместители руководителей органов власти, сотрудники аппарата кабинета министров и администрации главы региона. Сейчас к программе подключились руководители цифровой трансформации муниципалитетов.", "Обучение идёт в рамках республиканской программы развития искусственного интеллекта."], "why": "Заказчик, который сам прошёл обучение, разговаривает предметно и быстрее принимает решения — момент для предложения удачный."}, {"scope": "Регион", "region": "Пермский край", "ind": "it", "kind": "Новость", "aud": "B2G", "t": "Край станет полигоном для внедрения ИИ при поддержке Сбера", "d": "2026", "s": "59i.ru", "url": "https://59i.ru/novosti/novosti-permi-i-permskogo-kraja/permskii-krai-stanet-poligonom-dlja-vnedrenija-ii-pri-podderzhke-sbera.html", "g": "Регион выбран площадкой для отработки решений на основе искусственного интеллекта.", "body": ["Пермский край становится полигоном для внедрения технологий искусственного интеллекта при поддержке Сбера: на территории региона планируется отрабатывать решения, которые затем можно тиражировать.", "Договорённости закрепляют статус края как одной из площадок, где ИИ-проекты переходят из пилотов в постоянную эксплуатацию."], "why": "Прямая точка входа: у региона уже есть рамочная договорённость, и предложение попадает в готовую повестку, а не начинает разговор с нуля."}, {"scope": "Регион", "region": "Пермский край", "ind": "mash", "kind": "Новость", "aud": "B2B", "t": "Шестнадцать предприятий края представили разработки на «Иннопроме»", "d": "2026", "s": "ura.news", "url": "https://ura.news/articles/1053107905", "g": "Среди тем — цифровизация транспорта и развитие электросетевого комплекса.", "body": ["На международной промышленной выставке «Иннопром-2026» Пермский край представили шестнадцать компаний. В повестке региона — цифровизация транспорта и развитие электросетевого комплекса Прикамья."], "why": "Список участников выставки — готовый перечень предприятий, открытых к технологическим проектам."}, {"scope": "Регион", "region": "Нижегородская обл.", "ind": "gov", "kind": "Кейс", "aud": "B2G", "t": "Шесть ИИ-сервисов в медицине: диагноз за семь минут", "d": "2026", "s": "vremyan.ru", "url": "https://www.vremyan.ru/news/610371", "g": "Обработано почти 650 тысяч исследований, время постановки диагноза сократилось до семи минут.", "body": ["В медицинских учреждениях области внедрены шесть зарегистрированных ИИ-сервисов для лучевой диагностики: флюорография, компьютерная томография органов грудной клетки, маммография и рентген. Это на один сервис больше, чем требует федеральный центр.", "Искусственный интеллект автоматически измеряет расстояния, включая межрёберные промежутки, и обозначает на снимке зоны, требующие внимания врача. Нижегородскими клиниками обработано почти 650 тысяч исследований, время выдачи заключения сократилось до семи минут. Окончательное решение остаётся за врачом."], "why": "Один из немногих региональных кейсов с посчитанным объёмом и сроком — удобно показывать как доказательство работоспособности.", "stats": [{"v": "650 тыс.", "k": "исследований обработано", "i": "doc"}, {"v": "7 минут", "k": "время выдачи заключения", "i": "time"}, {"v": "6", "k": "сервисов внедрено", "i": "check"}]}, {"scope": "Регион", "region": "Чувашия", "ind": "gov", "kind": "Новость", "aud": "B2G", "t": "В республике апробируют медицинский сервис «третьего мнения»", "d": "2026", "s": "tass.ru", "url": "https://tass.ru/obschestvo/25688559", "g": "Система на основе ИИ будет давать дополнительное заключение по спорным случаям.", "body": ["В Чувашии планируют апробировать медицинский сервис с использованием искусственного интеллекта, предусматривающий так называемое третье мнение — дополнительное заключение по случаям, где мнения специалистов расходятся."], "why": "Формат «третьего мнения» снимает страх ответственности: ИИ не заменяет врача, а разрешает спор — этот аргумент работает в любой регулируемой отрасли."}, {"scope": "Регион", "region": "Чувашия", "ind": "gov", "kind": "Кейс", "aud": "B2G", "t": "ИИ разбирает документы в МФЦ и снимки в больницах", "d": "2026", "s": "d-russia.ru", "url": "https://d-russia.ru/mintsifry-chuvashskoy-respubliki-itogi-2025-goda-i-plany-na-2026-god.html", "g": "Интеллектуальная обработка документов при госуслугах, анализ медкарт, флюорографии, маммографии и КТ.", "body": ["В республике работают региональные решения с искусственным интеллектом: в многофункциональных центрах — интеллектуальная обработка документов при предоставлении государственных и муниципальных услуг, в здравоохранении — системы анализа медицинских карт, флюорографии, маммографии и компьютерной томографии."], "why": "Два разных применения в одном регионе показывают, что заказчик уже прошёл первый этап и готов к более сложным задачам."}, {"scope": "Регион", "region": "Марий Эл", "ind": "gov", "kind": "Новость", "aud": "B2G", "t": "ИИ-инструменты встраивают в основные процессы органов власти", "d": "09.2026", "s": "cnews.ru", "url": "https://www.cnews.ru/news/line/2026-09-01_pravitelstvo_marij_el_ispolzuet", "g": "После перехода на отечественный документооборот планируется подключение ИИ и новых интеграций.", "body": ["Правительство республики перешло на отечественную платформу документооборота Directum RX. В планах — подключение новых организаций, интеграции с региональной витриной данных, платформой обратной связи и офисным пакетом «Р7-Офис», а также внедрение ИИ-инструментов в основные рабочие процессы."], "why": "Документооборот уже отечественный и цифровой — техническая почва для распознавания документов и помощников подготовлена."}, {"scope": "Регион", "region": "Кировская обл.", "ind": "gov", "kind": "Новость", "aud": "B2G", "t": "Губернатор провёл первое заседание комиссии по ИИ", "d": "2026", "s": "tadviser.ru", "url": "https://www.tadviser.ru/index.php/Статья:Кировская_область", "g": "Промышленные предприятия региона запросили сервисы аналитики и прогнозирования на основе ИИ.", "body": ["Губернатор области провёл первое заседание межведомственной комиссии по созданию, развитию и внедрению технологий искусственного интеллекта в регионе.", "Отдельно отмечено, что промышленные предприятия области нуждаются в сервисах аналитики и прогнозирования на основе искусственного интеллекта."], "why": "Спрос сформулирован самими предприятиями и озвучен на уровне губернатора — это готовое техническое задание для разговора."}, {"scope": "Регион", "region": "Удмуртия", "ind": "gov", "kind": "Новость", "aud": "B2G", "t": "Запущена выдача детских медицинских справок онлайн", "d": "2026", "s": "comnews.ru", "url": "https://www.comnews.ru/content/244757/2026-04-14/2026-w16/1008/pravitelstvo-postanovilo-vydelit-10-mlrd-rub-2026-g-cifrovizaciyu-zdravookhraneniya-regionakh", "g": "Справки для детей оформляются через портал госуслуг без визита в поликлинику.", "body": ["В республике заработала система выдачи медицинских справок для детей через портал государственных услуг. Это часть общей программы цифровизации здравоохранения, на которую в 2026 году восемьдесят четыре региона получают десять миллиардов рублей — в том числе на электронный документооборот с применением искусственного интеллекта."], "why": "Финансирование федеральное и уже выделено — значит, у региона есть бюджет на смежные проекты в здравоохранении."}, {"scope": "Россия", "region": null, "ind": "it", "kind": "Практика", "aud": "B2B", "t": "Рынок ПО для искусственного интеллекта вырос на 27% за год", "d": "2026", "s": "tadviser.ru", "url": "https://www.tadviser.ru/index.php/Статья:Искусственный_интеллект_(рынок_России)", "g": "Объём достиг 25 млрд рублей; 36% организаций уже измеряют прямой эффект.", "body": ["Объём российского рынка программного обеспечения для искусственного интеллекта за год вырос на 27 процентов и достиг 25 миллиардов рублей.", "Тридцать шесть процентов организаций уже способны измерить прямой экономический эффект от внедрений — это на девять процентных пунктов больше, чем двумя годами ранее. Лидеры по проникновению — образование и сектор информационных технологий, промышленность и розница догоняют."], "why": "Цифры роста рынка помогают снять возражение «это ещё не проверено»: отрасль уже перешла к массовому применению.", "stats": [{"v": "25 млрд ₽", "k": "объём рынка", "i": "money"}, {"v": "+27%", "k": "рост за год", "i": "up", "d": "up"}, {"v": "36%", "k": "организаций считают эффект", "i": "check"}]}, {"scope": "Россия", "region": null, "ind": "apk", "kind": "Кейс", "aud": "B2B", "t": "АШАН: предиктивная аналитика сократила расхождения с поставщиками на 80%", "d": "2026", "s": "rb.ru", "url": "https://rb.ru/reviews/ekonomika-suvereniteta-kak-finansovyj-sektor-promyshlennost-i-retejl-monetiziruyut-novye-tehnologii/", "g": "Экономия — 60 млн рублей в год.", "body": ["Сеть гипермаркетов внедрила предиктивную аналитику на основе искусственного интеллекта для работы с поставщиками. Расхождения в поставках сократились на восемьдесят процентов, годовая экономия составила шестьдесят миллионов рублей.", "В целом по российской рознице экономический эффект от ИИ-аналитики оценивается в один-два процента выручки."], "why": "Понятная механика и посчитанный эффект: тот же подход применим к любому бизнесу с большим числом поставщиков.", "stats": [{"v": "80%", "k": "снижение расхождений с поставщиками", "i": "down", "d": "down"}, {"v": "60 млн ₽", "k": "экономия в год", "i": "money"}]}], "ind": {"neft": "Нефтегаз и химия", "mash": "Машиностроение и ОПК", "met": "Металлургия", "apk": "АПК и пищепром", "les": "Леспром", "it": "IT и цифра", "pharma": "Фарма и медицина", "elec": "Электротехника и электроника", "stroy": "Стройиндустрия", "fin": "Финансы", "gov": "Госсектор"}, "regions": {"Татарстан": ["neft", "mash", "it", "apk", "stroy"], "Пермский край": ["neft", "mash", "met", "les", "it"], "Нижегородская обл.": ["mash", "it", "met", "neft", "apk"], "Удмуртия": ["mash", "neft", "elec", "apk"], "Владимирская обл.": ["mash", "pharma", "apk", "stroy"], "Кировская обл.": ["les", "neft", "pharma", "mash", "apk"], "Чувашия": ["elec", "mash", "neft", "apk"], "Мордовия": ["elec", "mash", "apk", "stroy"], "Марий Эл": ["mash", "apk", "les", "elec"]}};
+const IND = DATA.ind, REGIONS = DATA.regions, ITEMS = DATA.items;
+let region="", aud="", kind="";
+
+const regPaths=[...document.querySelectorAll("#svgmap .reg")];
+const regLbls=[...document.querySelectorAll("#svgmap .lbl")];
+const audBtns=[...document.querySelectorAll("#audFilter button")];
+const kindBtns=[...document.querySelectorAll("#kindFilter button")];
+const resetBtn=document.getElementById("resetReg");
+regPaths.forEach(p=>{
+  p.setAttribute("tabindex","0");
+  const pick=()=>{ region = (region===p.dataset.r? "" : p.dataset.r); render(); };
+  p.onclick=pick;
+  p.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); pick(); } };
+});
+resetBtn.onclick=()=>{ region=""; render(); };
+audBtns.forEach(b=>b.onclick=()=>{ aud=b.dataset.a; render(); });
+kindBtns.forEach(b=>b.onclick=()=>{ kind=b.dataset.k; render(); });
+
+const SCOPE_ORDER={"Регион":0,"Россия":1,"Мир":2};
+function plural(n, one, few, many){
+  const m10=n%10, m100=n%100;
+  if(m10===1 && m100!==11) return one;
+  if(m10>=2 && m10<=4 && (m100<12 || m100>14)) return few;
+  return many;
+}
+const FULLNAME={"Кировская обл.":"Кировская область","Нижегородская обл.":"Нижегородская область","Владимирская обл.":"Владимирская область"};
+const GENITIVE={
+ "Татарстан":"Республики Татарстан","Пермский край":"Пермского края",
+ "Нижегородская обл.":"Нижегородской области","Удмуртия":"Удмуртии",
+ "Владимирская обл.":"Владимирской области","Кировская обл.":"Кировской области",
+ "Чувашия":"Чувашии","Мордовия":"Мордовии","Марий Эл":"Марий Эл"};
+function scopeLabel(it){
+  if(it.scope!=="Регион") return it.scope;
+  return it.region===region ? "в регионе" : (FULLNAME[it.region]||it.region);
+}
+function scopeCls(it){ return (it.scope==="Регион" && it.region===region) ? "reg" : ""; }
+function kcls(k){ return k==="Кейс"?"k-kejs":k==="Практика"?"k-praktika":"k-novost"; }
+
+function render(){
+  regPaths.forEach(p=>p.classList.toggle("on", p.dataset.r===region));
+  regLbls.forEach(t=>t.classList.toggle("on", t.dataset.r===region));
+  audBtns.forEach(b=>b.classList.toggle("on", b.dataset.a===aud));
+  kindBtns.forEach(b=>b.classList.toggle("on", b.dataset.k===kind));
+  resetBtn.hidden = !region;
+  const hint=document.getElementById("mapHint");
+  if(hint) hint.textContent = region
+    ? "Выбран регион: " + (FULLNAME[region]||region) + ". Нажмите его ещё раз, чтобы снять выбор."
+    : "Нажмите регион на карте — ниже соберётся его лента.";
+
+  const inds = region ? REGIONS[region] : null;
+  let list = ITEMS.filter(it=>{
+    if(region){
+      const own = it.region===region;
+      if(it.kind==="Новость"){
+        // в блоке региона — только его собственные новости
+        if(!own) return false;
+      } else {
+        // кейсы и практики: свои + чужие, если отрасль важна этому региону
+        if(!own && !(inds.includes(it.ind) || it.ind==="gov")) return false;
+      }
+    }
+    if(aud && it.aud!==aud) return false;
+    if(kind && it.kind!==kind) return false;
+    return true;
+  });
+
+  const isNews = it => it.kind==="Новость";
+  const news = list.filter(isNews);
+  const cases = list.filter(it=>!isNews(it));
+
+  document.getElementById("newsTitle").textContent =
+    region ? "Новости " + (GENITIVE[region]||region) + ":" : "Новости";
+  document.getElementById("caseTitle").textContent =
+    region ? "Кейсы и практики для " + (GENITIVE[region]||region) : "Кейсы и практики";
+  document.getElementById("caseHint").textContent = region
+    ? "Отрасли региона: " + REGIONS[region].map(i=>IND[i]).join(" · ") + ". Включены кейсы из других регионов по этим же отраслям."
+    : "Вся копилка по отраслям.";
+  document.getElementById("newsCount").textContent = news.length + " " + plural(news.length,"материал","материала","материалов");
+  document.getElementById("caseCount").textContent = cases.length + " " + plural(cases.length,"материал","материала","материалов");
+
+  const draw = (arr, box) => {
+    const groups={};
+    arr.forEach(it=>{ (groups[IND[it.ind]] ||= []).push(it); });
+    const names=Object.keys(groups).sort((a,b)=>a.localeCompare(b,"ru"));
+    box.innerHTML = names.map(n=>{
+      const g=groups[n].sort((a,b)=>SCOPE_ORDER[a.scope]-SCOPE_ORDER[b.scope]);
+      return `<h3 class="rubric">${n}</h3><div class="cards">` + g.map(it=>{
+        const i=ITEMS.indexOf(it);
+        return `<div class="item" data-i="${i}" tabindex="0" role="button">
+          <div class="toprow"><span class="t">${it.t}</span><span class="date">${it.d}</span></div>
+          <p class="g">${it.g}</p>
+          <div class="tags">
+            <span class="tag ${kcls(it.kind)}">${it.kind}</span>
+            <span class="tag sc ${scopeCls(it)}">${scopeLabel(it)}</span>
+            <span class="tag aud">${it.aud}</span>
+          </div></div>`;
+      }).join("") + `</div>`;
+    }).join("");
+  };
+  draw(news, document.getElementById("newslist"));
+  draw(cases, document.getElementById("caselist"));
+  document.getElementById("newsEmpty").hidden = news.length>0;
+  document.getElementById("caseEmpty").hidden = cases.length>0;
+}
+
+const ovl=document.getElementById("ovl");
+let lastFocus=null;
+function openItem(it){
+  lastFocus=document.activeElement;
+  document.getElementById("mMeta").textContent = it.meta ||
+    `${it.d} · ${it.kind} · ${it.scope==="Регион"? it.region : it.scope} · ${it.s}`;
+  document.getElementById("mTitle").textContent = it.t || it.title || "";
+  let html="";
+  const st = (it.stats||[]).slice();
+  // главная цифра — крупной плашкой перед текстом
+  if(st.length){
+    const h=st.shift();
+    html += `<div class="hero-stat ${h.d||""}">${ICONS[h.i]||""}
+      <div class="txt"><span class="v">${h.v}</span><span class="k">${h.k}</span></div></div>`;
+  }
+  // остальные — врезками между абзацами, попеременно справа и слева
+  const paras = it.body ? it.body.slice() : [];
+  let out="";
+  paras.forEach((p,i)=>{
+    if(st.length && i>0){
+      const s=st.shift();
+      out += `<div class="aside-stat ${i%2===0?"left":""}">
+        <div class="stat ${s.d||""}">${ICONS[s.i]||""}
+        <span class="v">${s.v}</span><span class="k">${s.k}</span></div></div>`;
+    }
+    out += `<p>${p}</p>`;
+  });
+  html += out;
+  // если плитки остались — общим рядом после текста
+  if(st.length){
+    html += `<div class="stats">` + st.map(s=>
+      `<div class="stat ${s.d||""}">${ICONS[s.i]||""}
+        <span class="v">${s.v}</span><span class="k">${s.k}</span></div>`).join("") + `</div>`;
+  }
+  if(it.fields) html += `<div style="display:flex;flex-direction:column;gap:4px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;">` +
+    it.fields.map(([k,v])=>`<div><b>${k}.</b> ${v}</div>`).join("") + `</div>`;
+  if(it.eff && it.eff.length) html += `<div class="why"><b>Эффекты.</b> ` +
+    it.eff.map(([i,t])=>`${i} ${t}`).join("; ") + `</div>`;
+  if(it.why) html += `<div class="why"><b>Что это значит для клиента.</b> ${it.why}</div>`;
+  document.getElementById("mBody").innerHTML = html;
+  const a=document.getElementById("mSrc");
+  const link=it.url||it.src;
+  if(link){ a.href=link; a.hidden=false; } else { a.hidden=true; }
+  ovl.hidden=false; document.body.style.overflow="hidden";
+  // всегда открывать материал с начала
+  const bodyEl=document.getElementById("mBody");
+  if(bodyEl) bodyEl.scrollTop=0;
+  const modalEl=document.getElementById("modal");
+  if(modalEl) modalEl.scrollTop=0;
+  document.getElementById("mClose").focus({preventScroll:true});
+}
+function closeNews(){ ovl.hidden=true; document.body.style.overflow=""; if(lastFocus) lastFocus.focus(); }
+document.querySelectorAll(".digest li[data-id]").forEach(li=>{
+  const open=()=>openItem(FULL[li.dataset.id]);
+  li.onclick=open;
+  li.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); open(); } };
+});
+["newslist","caselist"].forEach(id=>{
+  const box=document.getElementById(id);
+  box.addEventListener("click", e=>{
+    const el=e.target.closest(".item[data-i]"); if(el) openItem(ITEMS[+el.dataset.i]);
+  });
+  box.addEventListener("keydown", e=>{
+    if(e.key!=="Enter" && e.key!==" ") return;
+    const el=e.target.closest(".item[data-i]"); if(el){ e.preventDefault(); openItem(ITEMS[+el.dataset.i]); }
+  });
+});
+document.getElementById("mClose").onclick=closeNews;
+ovl.onclick=e=>{ if(e.target===ovl) closeNews(); };
+document.addEventListener("keydown", e=>{ if(e.key==="Escape" && !ovl.hidden) closeNews(); });
+render();
+
+// сворачивание рубрик недели до двух карточек (только широкий экран)
+function setupMore(){
+  const wide = window.matchMedia("(min-width:1000px)").matches;
+  document.querySelectorAll("#news .rubcol").forEach(col=>{
+    const items=[...col.querySelectorAll(".digest li")];
+    let btn=col.querySelector(".morebtn");
+    if(items.length<=2){ if(btn) btn.remove(); items.forEach(li=>li.classList.remove("hid")); return; }
+    if(!btn){
+      btn=document.createElement("button");
+      btn.className="morebtn"; btn.dataset.open="0";
+      col.appendChild(btn);
+      btn.onclick=()=>{
+        const open = btn.dataset.open==="1";
+        btn.dataset.open = open ? "0" : "1";
+        items.forEach((li,i)=>li.classList.toggle("hid", open ? i>=2 : false));
+        btn.textContent = open ? "Ещё " + (items.length-2) : "Свернуть";
+      };
+    }
+    if(!wide){ items.forEach(li=>li.classList.remove("hid")); return; }
+    if(btn.dataset.open==="1"){ items.forEach(li=>li.classList.remove("hid")); btn.textContent="Свернуть"; }
+    else { items.forEach((li,i)=>li.classList.toggle("hid", i>=2)); btn.textContent="Ещё " + (items.length-2); }
+  });
+}
+setupMore();
+window.addEventListener("resize", setupMore);
+</script>
