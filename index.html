@@ -647,7 +647,7 @@ function openItem(it){
   lastFocus=document.activeElement;
   document.getElementById("mMeta").textContent = it.meta ||
     `${it.d} · ${it.kind} · ${it.scope==="Регион"? it.region : it.scope} · ${it.s}`;
-  document.getElementById("mTitle").textContent=it.t;
+  document.getElementById("mTitle").textContent = it.t || it.title || "";
   let html="";
   if(it.body) html += it.body.map(t=>`<p>${t}</p>`).join("");
   if(it.fields) html += `<div style="display:flex;flex-direction:column;gap:4px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;">` +
