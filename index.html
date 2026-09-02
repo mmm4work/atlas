@@ -184,7 +184,9 @@ svg.map{width:100%; height:auto; display:block; touch-action:manipulation;}
   transition:fill .15s;}
 .reg:hover{fill:var(--land-hi);}
 .reg.on{fill:var(--accent);}
+.reg:focus{outline:none;}
 .reg:focus-visible{outline:2px solid var(--accent-ink); outline-offset:2px;}
+body.mouse .reg:focus-visible{outline:none;}
 .lbl{font:600 2.6px "Golos Text",sans-serif; fill:var(--ink); text-anchor:middle;
   pointer-events:none; paint-order:stroke; stroke:var(--surface); stroke-width:.7px;}
 .lbl.small{font-size:2.2px;}
@@ -454,6 +456,12 @@ audBtns.forEach(b=>b.onclick=()=>{ aud=b.dataset.a; render(); });
 kindBtns.forEach(b=>b.onclick=()=>{ kind=b.dataset.k; render(); });
 
 const SCOPE_ORDER={"Регион":0,"Россия":1,"Мир":2};
+function plural(n, one, few, many){
+  const m10=n%10, m100=n%100;
+  if(m10===1 && m100!==11) return one;
+  if(m10>=2 && m10<=4 && (m100<12 || m100>14)) return few;
+  return many;
+}
 function scopeLabel(it){
   if(it.scope!=="Регион") return it.scope;
   return it.region===region ? "в регионе" : it.region;
@@ -496,8 +504,8 @@ function render(){
   document.getElementById("caseHint").textContent = region
     ? "Отрасли региона: " + REGIONS[region].map(i=>IND[i]).join(" · ") + ". Включены кейсы из других регионов по этим же отраслям."
     : "Вся копилка по отраслям.";
-  document.getElementById("newsCount").textContent = news.length + " материалов";
-  document.getElementById("caseCount").textContent = cases.length + " материалов";
+  document.getElementById("newsCount").textContent = news.length + " " + plural(news.length,"материал","материала","материалов");
+  document.getElementById("caseCount").textContent = cases.length + " " + plural(cases.length,"материал","материала","материалов");
 
   const draw = (arr, box) => {
     const groups={};
