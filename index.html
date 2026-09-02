@@ -660,7 +660,12 @@ function openItem(it){
   const link=it.url||it.src;
   if(link){ a.href=link; a.hidden=false; } else { a.hidden=true; }
   ovl.hidden=false; document.body.style.overflow="hidden";
-  document.getElementById("mClose").focus();
+  // всегда открывать материал с начала
+  const bodyEl=document.getElementById("mBody");
+  if(bodyEl) bodyEl.scrollTop=0;
+  const modalEl=document.getElementById("modal");
+  if(modalEl) modalEl.scrollTop=0;
+  document.getElementById("mClose").focus({preventScroll:true});
 }
 function closeNews(){ ovl.hidden=true; document.body.style.overflow=""; if(lastFocus) lastFocus.focus(); }
 document.querySelectorAll(".digest li[data-id]").forEach(li=>{
