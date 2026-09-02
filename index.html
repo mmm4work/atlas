@@ -193,6 +193,7 @@ body.mouse .reg:focus-visible{outline:none;}
 .lbl.on{fill:#fff; stroke:none;}
 #legend{display:none;}
 .lg-title{display:none;}
+#news .morebtn{display:none;}
 .maphint{font-size:.82rem; color:var(--muted); margin:8px 0 0;}
 .reset{margin-top:6px; font:500 .84rem "Golos Text",sans-serif; color:var(--accent);
   background:none; border:0; cursor:pointer; padding:4px 0; text-decoration:underline;}
@@ -292,6 +293,10 @@ footer{margin-top:44px; font-size:.82rem; color:var(--muted);
     align-items:start;}
   #news .rubcol{min-width:0;}
   #news .rubcol .rubric{margin-top:0;}
+  #news .rubcol .digest li.hid{display:none;}
+  #news .morebtn{display:block; margin:8px 0 0 auto; font:600 .82rem "Golos Text",sans-serif;
+    color:var(--accent); background:none; border:0; cursor:pointer; padding:4px 2px;}
+  #news .morebtn:hover{text-decoration:underline;}
   ul.digest{display:flex; flex-direction:column;}
   /* регион: карта слева, лента справа */
   .col-news,.col-cases{min-width:0;}
@@ -311,10 +316,11 @@ footer{margin-top:44px; font-size:.82rem; color:var(--muted);
   .region-grid{display:block;}
   .region-top{position:sticky; top:0; z-index:6; background:var(--ground);
     display:grid; grid-template-columns:minmax(430px,46%) 1fr; gap:26px;
-    align-items:start; padding:8px 0 14px; border-bottom:1px solid var(--line);}
+    align-items:stretch; padding:8px 0 14px; border-bottom:1px solid var(--line);}
   .region-top .mapwrap{margin:0;}
   .region-top svg.map{max-height:40vh; width:auto; margin:0 auto; display:block;}
-  .panel{display:flex; flex-direction:column; gap:12px;}
+  .panel{display:flex; flex-direction:column; gap:12px; height:100%;}
+  .panel .pickrow{margin-bottom:auto;}
   .panel .seg{margin:0; width:100%;}
   .panel .seg button{flex:1 1 auto;}
   .pickrow{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;}
@@ -556,6 +562,11 @@ function plural(n, one, few, many){
   return many;
 }
 const FULLNAME={"Кировская обл.":"Кировская область","Нижегородская обл.":"Нижегородская область","Владимирская обл.":"Владимирская область"};
+const GENITIVE={
+ "Татарстан":"Республики Татарстан","Пермский край":"Пермского края",
+ "Нижегородская обл.":"Нижегородской области","Удмуртия":"Удмуртии",
+ "Владимирская обл.":"Владимирской области","Кировская обл.":"Кировской области",
+ "Чувашия":"Чувашии","Мордовия":"Мордовии","Марий Эл":"Марий Эл"};
 function scopeLabel(it){
   if(it.scope!=="Регион") return it.scope;
   return it.region===region ? "в регионе" : (FULLNAME[it.region]||it.region);
@@ -596,9 +607,9 @@ function render(){
   const cases = list.filter(it=>!isNews(it));
 
   document.getElementById("newsTitle").textContent =
-    region ? "Новости: " + region : "Новости";
+    region ? "Новости " + (GENITIVE[region]||region) + ":" : "Новости";
   document.getElementById("caseTitle").textContent =
-    region ? "Кейсы и практики для региона" : "Кейсы и практики";
+    region ? "Кейсы и практики для " + (GENITIVE[region]||region) : "Кейсы и практики";
   document.getElementById("caseHint").textContent = region
     ? "Отрасли региона: " + REGIONS[region].map(i=>IND[i]).join(" · ") + ". Включены кейсы из других регионов по этим же отраслям."
     : "Вся копилка по отраслям.";
@@ -671,4 +682,30 @@ document.getElementById("mClose").onclick=closeNews;
 ovl.onclick=e=>{ if(e.target===ovl) closeNews(); };
 document.addEventListener("keydown", e=>{ if(e.key==="Escape" && !ovl.hidden) closeNews(); });
 render();
+
+// сворачивание рубрик недели до двух карточек (только широкий экран)
+function setupMore(){
+  const wide = window.matchMedia("(min-width:1000px)").matches;
+  document.querySelectorAll("#news .rubcol").forEach(col=>{
+    const items=[...col.querySelectorAll(".digest li")];
+    let btn=col.querySelector(".morebtn");
+    if(items.length<=2){ if(btn) btn.remove(); items.forEach(li=>li.classList.remove("hid")); return; }
+    if(!btn){
+      btn=document.createElement("button");
+      btn.className="morebtn"; btn.dataset.open="0";
+      col.appendChild(btn);
+      btn.onclick=()=>{
+        const open = btn.dataset.open==="1";
+        btn.dataset.open = open ? "0" : "1";
+        items.forEach((li,i)=>li.classList.toggle("hid", open ? i>=2 : false));
+        btn.textContent = open ? "Ещё " + (items.length-2) : "Свернуть";
+      };
+    }
+    if(!wide){ items.forEach(li=>li.classList.remove("hid")); return; }
+    if(btn.dataset.open==="1"){ items.forEach(li=>li.classList.remove("hid")); btn.textContent="Свернуть"; }
+    else { items.forEach((li,i)=>li.classList.toggle("hid", i>=2)); btn.textContent="Ещё " + (items.length-2); }
+  });
+}
+setupMore();
+window.addEventListener("resize", setupMore);
 </script>
