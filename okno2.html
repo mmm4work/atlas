@@ -685,7 +685,7 @@ function openItem(it){
   lastFocus=document.activeElement;
   document.getElementById("mMeta").textContent = it.meta ||
     `${it.d} · ${it.kind} · ${it.scope==="Регион"? it.region : it.scope} · ${it.s}`;
-  document.getElementById("mTitle").textContent=it.t;
+  document.getElementById("mTitle").textContent = it.t || it.title || "";
   let html="";
   if(it.stats && it.stats.length){
     html += `<div class="stats">` + it.stats.map(s=>
