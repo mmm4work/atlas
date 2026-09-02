@@ -189,8 +189,9 @@ svg.map{width:100%; height:auto; display:block; touch-action:manipulation;}
 body.mouse .reg:focus-visible{outline:none;}
 .lbl{font:600 2.6px "Golos Text",sans-serif; fill:var(--ink); text-anchor:middle;
   pointer-events:none; paint-order:stroke; stroke:var(--surface); stroke-width:.7px;}
-.lbl.small{font-size:2.2px;}
+.lbl.small{font-size:2.05px;}
 .lbl.on{fill:#fff; stroke:none;}
+#legend{display:none;}
 .maphint{font-size:.82rem; color:var(--muted); margin:8px 0 0;}
 .reset{margin-top:6px; font:500 .84rem "Golos Text",sans-serif; color:var(--accent);
   background:none; border:0; cursor:pointer; padding:4px 0; text-decoration:underline;}
@@ -266,7 +267,8 @@ footer{margin-top:44px; font-size:.82rem; color:var(--muted);
   padding:13px 15px; cursor:pointer; transition:border-color .15s;}
 .item:hover{border-color:var(--accent);}
 .item:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
-.item .toprow{display:flex; gap:10px; align-items:baseline; justify-content:space-between;}
+.item .toprow{display:flex; gap:14px; align-items:baseline; justify-content:space-between;}
+.item .date{flex:0 0 auto;}
 .item .t{font-family:"Playfair Display",Georgia,serif; font-weight:600; font-size:1.04rem;
   line-height:1.3;}
 .item .g{font-size:.9rem; color:var(--muted); margin:4px 0 0;}
@@ -297,6 +299,22 @@ footer{margin-top:44px; font-size:.82rem; color:var(--muted);
   h2{font-size:1.5rem;}
   .item .t{font-size:1.1rem;}
   .modal{max-width:720px;}
+
+  /* легенда — только на широком экране */
+  .legend{display:flex; flex-direction:column; gap:7px; margin-top:18px;
+    padding:14px 16px; background:var(--surface); border:1px solid var(--line);
+    border-radius:14px; font-size:.84rem; color:var(--muted);}
+  .lg-row{display:flex; align-items:center; gap:10px;}
+  .lg-row .tag{flex:0 0 auto;}
+  .lg-sep{height:1px; background:var(--line); margin:3px 0;}
+  /* карта крупнее и без пустот */
+  .mapwrap{padding:6px 4px 2px;}
+  /* «показать всё» отделено от переключателя */
+  .reset{display:block; margin:14px 0 4px;}
+  /* шапка компактнее, глобус вписан целиком */
+  .hero .inner{padding:34px 32px 26px;}
+  .globe{width:330px; height:330px; right:16px; top:50%; transform:translateY(-50%);}
+  .brand{font-size:2.5rem;}
 }
 @media (min-width:1400px){
   .wrap{max-width:1340px;}
@@ -372,17 +390,17 @@ footer{margin-top:44px; font-size:.82rem; color:var(--muted);
       <path class="reg" id="m-mel" data-r="Марий Эл" d="M39.86,39.85 L36.32,40.64 L35.79,42.11 L36.25,42.51 L34.70,43.21 L35.30,44.53 L36.29,44.39 L36.32,45.32 L35.83,45.87 L36.29,46.65 L36.92,46.53 L36.66,47.15 L37.13,47.88 L38.42,46.93 L39.55,47.20 L40.03,46.25 L40.75,46.24 L41.89,45.35 L43.02,45.29 L43.18,46.70 L45.37,47.01 L45.74,48.32 L48.01,49.46 L47.85,48.75 L49.03,48.55 L49.16,47.51 L49.80,47.60 L49.89,47.04 L50.84,46.42 L50.24,45.86 L50.84,45.10 L51.66,44.69 L52.18,45.23 L52.60,43.97 L53.03,44.44 L53.29,43.76 L54.17,43.47 L54.16,44.18 L54.66,44.42 L55.26,43.83 L55.18,44.36 L56.27,43.30 L55.57,42.94 L55.65,40.97 L54.08,40.51 L53.88,39.06 L52.81,39.06 L52.45,39.50 L51.74,39.16 L51.26,38.02 L51.42,36.64 L50.64,37.10 L50.86,37.79 L50.37,38.84 L49.82,38.72 L49.72,38.11 L48.51,38.09 L47.85,38.61 L47.44,38.14 L46.54,38.95 L46.86,39.43 L45.67,39.90 L44.78,39.21 L43.58,40.81 L43.23,40.54 L42.42,41.18 L41.68,41.02 L41.65,40.20 L39.86,39.85 Z"><title>Марий Эл</title></path>
       <path class="reg" id="m-udm" data-r="Удмуртия" d="M62.12,46.94 L63.07,47.02 L61.95,47.95 L61.64,47.64 L62.27,48.77 L62.33,48.37 L63.37,48.52 L63.53,48.18 L63.72,48.99 L64.52,48.11 L65.48,48.83 L65.91,48.38 L65.89,47.20 L66.54,47.87 L67.10,47.75 L66.90,47.32 L68.29,48.13 L68.11,46.93 L68.73,47.35 L68.91,46.67 L67.36,45.97 L68.42,44.65 L69.10,44.63 L69.32,44.13 L68.89,43.72 L69.62,43.42 L70.15,43.58 L69.20,45.60 L69.77,46.93 L70.20,46.68 L71.03,47.50 L71.12,46.62 L70.59,45.94 L71.51,45.69 L72.17,46.02 L71.66,47.81 L70.41,48.66 L71.39,49.29 L73.34,48.24 L73.45,47.65 L74.25,47.94 L75.10,46.35 L76.02,45.83 L75.73,43.93 L75.33,44.14 L74.34,43.11 L74.57,42.63 L73.43,42.96 L73.72,42.27 L73.26,41.07 L74.28,41.64 L74.90,39.73 L75.79,39.78 L76.24,39.28 L75.57,38.62 L75.64,36.95 L74.78,36.76 L75.47,35.64 L74.14,34.80 L74.78,34.32 L74.41,34.09 L74.91,33.56 L74.82,31.42 L73.17,29.06 L73.64,28.39 L73.17,27.20 L70.47,27.66 L69.93,26.44 L68.96,26.54 L68.72,27.73 L66.25,27.40 L65.60,26.92 L63.74,28.00 L63.90,28.64 L63.24,29.79 L63.70,29.75 L63.87,30.88 L64.40,31.06 L63.90,32.39 L64.53,33.06 L64.11,33.36 L63.97,34.70 L62.99,35.04 L62.82,35.64 L60.81,35.81 L60.62,37.49 L61.19,38.39 L61.06,39.17 L61.89,40.32 L62.56,40.52 L61.88,41.52 L61.89,42.37 L60.89,42.22 L60.64,43.69 L60.91,44.40 L61.45,44.45 L61.39,45.42 L61.94,45.59 L61.68,46.30 L62.39,46.28 L62.12,46.94 Z M73.44,42.79 L74.63,42.47 L73.44,42.79 Z"><title>Удмуртия</title></path>
       <path class="reg" id="m-vld" data-r="Владимирская обл." d="M16.62,55.64 L17.33,53.59 L17.61,53.75 L18.39,52.74 L17.90,51.52 L18.21,50.75 L19.47,49.81 L20.10,48.41 L20.99,48.29 L20.76,47.27 L22.16,46.79 L21.91,46.26 L21.17,46.37 L21.39,45.56 L21.01,44.89 L18.57,44.21 L18.15,44.90 L17.41,44.97 L17.06,43.55 L13.60,44.01 L10.83,42.91 L9.24,44.30 L8.10,44.12 L7.33,42.92 L7.70,41.50 L6.65,41.14 L5.09,41.61 L4.74,43.47 L4.22,43.10 L3.32,43.49 L2.37,42.85 L1.48,43.49 L0.73,42.08 L0.25,42.35 L0.45,43.09 L0.00,43.58 L0.84,44.75 L0.61,45.77 L1.23,46.21 L1.56,48.19 L2.69,48.76 L3.66,48.45 L3.73,49.23 L5.00,49.17 L4.99,49.95 L5.73,50.19 L6.77,49.83 L6.90,49.36 L7.65,49.44 L8.61,51.35 L8.40,52.04 L9.12,52.28 L8.85,52.96 L9.18,53.59 L9.89,53.54 L9.97,54.05 L10.85,53.49 L11.00,54.80 L12.89,54.20 L13.26,55.05 L13.29,54.69 L14.27,54.52 L14.89,55.35 L15.42,55.04 L16.62,55.64 Z"><title>Владимирская обл.</title></path>
-      <text class="lbl small" data-r="Мордовия" x="29.1" y="61.5">Мордовия</text>
-      <text class="lbl" data-r="Кировская обл." x="55.8" y="24.8"><tspan x="55.8">Кировская</tspan><tspan x="55.8" dy="3.0">область</tspan></text>
-      <text class="lbl" data-r="Пермский край" x="81.8" y="22.0"><tspan x="81.8">Пермский</tspan><tspan x="81.8" dy="3.0">край</tspan></text>
-      <text class="lbl" data-r="Татарстан" x="58.9" y="53.7">Татарстан</text>
-      <text class="lbl" data-r="Нижегородская обл." x="30.7" y="44.2"><tspan x="30.7">Нижегородская</tspan><tspan x="30.7" dy="3.0">область</tspan></text>
-      <text class="lbl small" data-r="Чувашия" x="42.0" y="52.5">Чувашия</text>
-      <text class="lbl small" data-r="Марий Эл" x="45.5" y="43.0">Марий Эл</text>
-      <text class="lbl small" data-r="Удмуртия" x="68.4" y="37.9">Удмуртия</text>
-      <text class="lbl small" data-r="Владимирская обл." x="11.1" y="47.0"><tspan x="11.1">Владимирская</tspan><tspan x="11.1" dy="2.7">область</tspan></text>
+      <text class="lbl small" data-r="Мордовия" x="29.5" y="62.2">Мордовия</text>
+      <text class="lbl" data-r="Кировская обл." x="56.5" y="24.05"><tspan x="56.5">Кировская</tspan><tspan x="56.5" dy="2.90">область</tspan></text>
+      <text class="lbl" data-r="Пермский край" x="82.5" y="21.05"><tspan x="82.5">Пермский</tspan><tspan x="82.5" dy="2.90">край</tspan></text>
+      <text class="lbl" data-r="Татарстан" x="60.5" y="54.2">Татарстан</text>
+      <text class="lbl small" data-r="Нижегородская обл." x="28.5" y="46.25"><tspan x="28.5">Нижегородская</tspan><tspan x="28.5" dy="2.50">область</tspan></text>
+      <text class="lbl small" data-r="Чувашия" x="41.5" y="53.6">Чувашия</text>
+      <text class="lbl small" data-r="Марий Эл" x="46.5" y="41.0">Марий Эл</text>
+      <text class="lbl small" data-r="Удмуртия" x="69.0" y="37.0">Удмуртия</text>
+      <text class="lbl small" data-r="Владимирская обл." x="10.0" y="46.35"><tspan x="10.0">Владимирская</tspan><tspan x="10.0" dy="2.50">область</tspan></text>
     </svg></div>
-  <p class="maphint">Нажмите регион — ниже соберётся его лента.</p>
+  <p class="maphint" id="mapHint">Нажмите регион на карте — ниже соберётся его лента.</p>
   <button class="reset" id="resetReg" hidden>Показать всё</button>
 
   <div class="seg" id="audFilter" style="margin-top:14px;">
@@ -395,6 +413,15 @@ footer{margin-top:44px; font-size:.82rem; color:var(--muted);
     <button data-k="Кейс">Кейсы</button>
     <button data-k="Практика">Практики</button>
     <button data-k="Новость">Новости</button>
+  </div>
+  <div class="legend" id="legend">
+    <div class="lg-row"><span class="tag k-kejs">Кейс</span><span>конкретное внедрение у названной компании</span></div>
+    <div class="lg-row"><span class="tag k-praktika">Практика</span><span>обобщение по многим внедрениям отрасли</span></div>
+    <div class="lg-row"><span class="tag k-novost">Новость</span><span>событие, решение или программа</span></div>
+    <div class="lg-sep"></div>
+    <div class="lg-row"><span class="tag sc reg">в регионе</span><span>происходит в выбранном регионе</span></div>
+    <div class="lg-row"><span class="tag sc">Россия</span><span>федеральный уровень или другой регион</span></div>
+    <div class="lg-row"><span class="tag sc">Мир</span><span>зарубежный опыт</span></div>
   </div>
   </div>
 
@@ -426,7 +453,7 @@ footer{margin-top:44px; font-size:.82rem; color:var(--muted);
   цифру — мы не додумываем.
   <div style="margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:.74rem;">
     Обновление — по субботам · данные только из открытых источников ·
-    <a href="#news">новости</a> · <a href="#cases">кейсы</a>
+    <a href="#news">↑ к новостям недели</a> · <a href="#cases">↑ к регионам</a>
   </div>
 
   <div class="legal">
@@ -496,9 +523,10 @@ function plural(n, one, few, many){
   if(m10>=2 && m10<=4 && (m100<12 || m100>14)) return few;
   return many;
 }
+const FULLNAME={"Кировская обл.":"Кировская область","Нижегородская обл.":"Нижегородская область","Владимирская обл.":"Владимирская область"};
 function scopeLabel(it){
   if(it.scope!=="Регион") return it.scope;
-  return it.region===region ? "в регионе" : it.region;
+  return it.region===region ? "в регионе" : (FULLNAME[it.region]||it.region);
 }
 function scopeCls(it){ return (it.scope==="Регион" && it.region===region) ? "reg" : ""; }
 function kcls(k){ return k==="Кейс"?"k-kejs":k==="Практика"?"k-praktika":"k-novost"; }
@@ -509,6 +537,10 @@ function render(){
   audBtns.forEach(b=>b.classList.toggle("on", b.dataset.a===aud));
   kindBtns.forEach(b=>b.classList.toggle("on", b.dataset.k===kind));
   resetBtn.hidden = !region;
+  const hint=document.getElementById("mapHint");
+  if(hint) hint.textContent = region
+    ? "Выбран регион: " + (FULLNAME[region]||region) + ". Нажмите его ещё раз, чтобы снять выбор."
+    : "Нажмите регион на карте — ниже соберётся его лента.";
 
   const inds = region ? REGIONS[region] : null;
   let list = ITEMS.filter(it=>{
