@@ -309,20 +309,17 @@ footer{margin-top:44px; font-size:.82rem; color:var(--muted);
   .col-left{position:static;}
   .mapwrap{padding:10px 8px 4px;}
   svg.map{max-height:44vh; width:auto; margin:0 auto; display:block;}
-  /* панель управления под картой — в одну строку */
-  .controls{display:flex; align-items:center; gap:18px; flex-wrap:wrap;
-    margin:14px 0 4px;}
-  .controls .maphint{margin:0; flex:1 1 260px;}
+  .controls{display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin:14px 0 4px;}
+  .controls .maphint{margin:0; flex:1 1 240px;}
   .controls .seg{margin:0;}
   .controls .reset{margin:0;}
   #legend{display:flex; flex-direction:row; flex-wrap:wrap; gap:8px 22px;
     margin-top:12px; padding:12px 16px;}
   .lg-sep{display:none;}
-  /* материалы плиткой в три колонки */
   .col-right .cards{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;
     align-items:start;}
   .col-right .rubric{margin-top:26px;}
-  .col-right{margin-top:8px;}
+  .col-right{margin-top:10px;}
 
 
   /* легенда — только на широком экране */
@@ -426,6 +423,7 @@ footer{margin-top:44px; font-size:.82rem; color:var(--muted);
       <text class="lbl small" data-r="Удмуртия" x="69.0" y="37.0">Удмуртия</text>
       <text class="lbl small" data-r="Владимирская обл." x="10.0" y="46.35"><tspan x="10.0">Владимирская</tspan><tspan x="10.0" dy="2.50">область</tspan></text>
     </svg></div>
+  <div class="controls">
   <p class="maphint" id="mapHint">Нажмите регион на карте — ниже соберётся его лента.</p>
   <button class="reset" id="resetReg" hidden>Показать всё</button>
 
