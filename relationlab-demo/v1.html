@@ -1,0 +1,334 @@
+<title>Relation Lab</title>
+<meta name="description" content="Лаборатория отношений. Исследуем себя. Понимаем друг друга. Создаём вместе.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500&family=Golos+Text:wght@400;500&display=swap">
+<style>
+  :root{
+    --ground:#0E1320;
+    --ground-2:#131A2B;
+    --surface:rgba(22,28,46,.72);
+    --line:rgba(151,160,184,.18);
+    --text:#EEF1F7;
+    --muted:#97A0B8;
+    --me:#F4A58A;
+    --you:#7FD3CC;
+    --us:#FFF1DC;
+    --display:"Unbounded",ui-sans-serif,system-ui,"Segoe UI",Roboto,sans-serif;
+    --body:"Golos Text",ui-sans-serif,system-ui,"Segoe UI",Roboto,sans-serif;
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--ground);color:var(--text);
+    font-family:var(--body);font-size:17px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  #scene{position:fixed;inset:0;z-index:0;display:block;width:100%;height:100%}
+  .veil{position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:radial-gradient(120% 80% at 50% 110%,rgba(14,19,32,.85),rgba(14,19,32,0) 60%)}
+  .page{position:relative;z-index:2;padding-inline:clamp(20px,6vw,88px)}
+  .wrap{max-width:1120px;margin-inline:auto}
+
+  header.top{display:flex;justify-content:space-between;align-items:center;gap:16px;
+    padding-block:22px 0}
+  .brand{font-family:var(--display);font-weight:500;font-size:15px;letter-spacing:.02em;text-decoration:none;color:var(--text)}
+  .brand span{color:var(--muted);font-weight:300}
+  .top a.tg{font-size:14px;color:var(--muted);text-decoration:none;border:1px solid var(--line);padding:8px 14px;border-radius:999px}
+  .top a.tg:hover,.top a.tg:focus-visible{color:var(--text);border-color:var(--muted);outline:none}
+
+  .hero{min-height:72vh;display:flex;flex-direction:column;justify-content:center;padding-block:56px 40px}
+  .eyebrow{font-family:var(--display);font-weight:300;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:0 0 20px}
+  h1{font-family:var(--display);font-weight:300;font-size:clamp(34px,6vw,72px);line-height:1.04;margin:0;max-width:14ch;text-wrap:balance}
+  h1 b{font-weight:500}
+  .lede{font-size:clamp(17px,1.6vw,21px);color:var(--muted);max-width:44ch;margin:26px 0 0}
+  .lede em{font-style:normal;color:var(--text)}
+  .hint{margin-top:56px;display:flex;align-items:center;gap:12px;color:var(--muted);font-size:13px}
+  .hint i{display:inline-block;width:1px;height:38px;background:linear-gradient(var(--muted),transparent)}
+
+  /* лестница */
+  .ladder{display:grid;gap:0}
+  .step{min-height:82vh;display:flex;align-items:center}
+  .step > div{max-width:520px}
+  .step:nth-child(even) > div{margin-left:auto}
+  .step .word{font-family:var(--display);font-weight:500;font-size:clamp(40px,7vw,96px);line-height:1;margin:0 0 18px;letter-spacing:-.01em}
+  .step[data-stage="0"] .word{color:var(--me)}
+  .step[data-stage="1"] .word{color:var(--you)}
+  .step[data-stage="2"] .word{color:var(--us)}
+  .step[data-stage="3"] .word{color:var(--text);font-size:clamp(28px,4.4vw,58px);font-weight:300}
+  .step p{margin:0;color:var(--muted);font-size:clamp(16px,1.5vw,19px);max-width:40ch}
+  .step p em{font-style:normal;color:var(--text)}
+
+  /* как устроено */
+  .how{padding-block:96px 40px}
+  .how h2{font-family:var(--display);font-weight:300;font-size:clamp(24px,3vw,36px);margin:0 0 40px;max-width:22ch;text-wrap:balance}
+  .cells{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+  .cell{background:var(--surface);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:18px;padding:26px 24px}
+  .cell .k{font-family:var(--display);font-weight:300;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 14px}
+  .cell h3{font-family:var(--body);font-weight:500;font-size:18px;margin:0 0 10px}
+  .cell p{margin:0;color:var(--muted);font-size:15px}
+  .cell.sample{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+  .msg{border-radius:14px;padding:14px 16px;font-size:15px;line-height:1.5}
+  .msg.user{background:rgba(244,165,138,.12);border:1px solid rgba(244,165,138,.25)}
+  .msg.bot{background:rgba(127,211,204,.10);border:1px solid rgba(127,211,204,.22)}
+  .msg .who{display:block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .msg ul{margin:8px 0 0;padding-left:18px}
+  .msg li{margin:3px 0}
+
+  .cta{padding-block:64px 96px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px;border-top:1px solid var(--line)}
+  .cta .f{font-family:var(--display);font-weight:300;font-size:clamp(20px,2.6vw,30px);max-width:24ch;text-wrap:balance;margin:0}
+  .btn{display:inline-flex;align-items:center;gap:10px;background:var(--us);color:#1A1410;text-decoration:none;
+    font-weight:500;font-size:16px;padding:14px 22px;border-radius:999px;border:1px solid transparent}
+  .btn:hover,.btn:focus-visible{background:#fff;outline:none}
+  .btn svg{width:18px;height:18px}
+  footer{padding-block:0 40px;color:var(--muted);font-size:13px;display:flex;flex-wrap:wrap;gap:8px 24px}
+
+  @media (max-width:820px){
+    .cells{grid-template-columns:1fr}
+    .cell.sample{grid-template-columns:1fr}
+    .step{min-height:64vh}
+    .step:nth-child(even) > div{margin-left:0}
+    .hero{min-height:60vh}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .hint i{display:none}
+  }
+</style>
+
+<canvas id="scene" aria-hidden="true"></canvas>
+<div class="veil"></div>
+
+<div class="page">
+  <div class="wrap">
+    <header class="top">
+      <a class="brand" href="#top">Relation <span>Lab</span></a>
+      <a class="tg" href="https://t.me/relationlab_bot">Открыть в Telegram</a>
+    </header>
+
+    <section class="hero" id="top">
+      <p class="eyebrow">Лаборатория отношений</p>
+      <h1>Исследуем себя. Понимаем друг друга. <b>Создаём вместе.</b></h1>
+      <p class="lede">Помощник, который <em>помнит</em> вас двоих: имя партнёра, прошлые разговоры, повторяющиеся сюжеты. Не анкета и не тест на совместимость. Разговор, к которому можно вернуться.</p>
+      <div class="hint"><i></i><span>Листайте. Сцена пройдёт лестницу «я → ты → мы → наша жизнь»</span></div>
+    </section>
+
+    <section class="ladder" id="ladder">
+      <div class="step" data-stage="0"><div>
+        <h2 class="word">Я</h2>
+        <p>Всё начинается с одного человека. <em>Что со мной происходит</em>, чего я хочу, что меня задевает. Лаборатория даёт этому место, без оценок и диагнозов.</p>
+      </div></div>
+      <div class="step" data-stage="1"><div>
+        <h2 class="word">Ты</h2>
+        <p>Рядом появляется другой. Со своими особенностями, деньгами, планами, бытом, усталостью. <em>Понять его</em> труднее, чем кажется, и важнее, чем спорить.</p>
+      </div></div>
+      <div class="step" data-stage="2"><div>
+        <h2 class="word">Мы</h2>
+        <p>Два человека вокруг одних отношений. Парный режим: <em>каждый видит своё</em>, а общее пространство строится из двух точек зрения, а не из одной.</p>
+      </div></div>
+      <div class="step" data-stage="3"><div>
+        <h2 class="word">Наша совместная жизнь</h2>
+        <p>Решения, деньги, дети, планы, близость, конфликты. Система, которую двое собирают годами. Relation Lab помогает <em>собирать её осознанно</em>.</p>
+      </div></div>
+    </section>
+
+    <section class="how">
+      <h2>Как устроен один разговор</h2>
+      <div class="cells">
+        <div class="cell">
+          <p class="k">Вы говорите</p>
+          <h3>Своими словами</h3>
+          <p>«Мы вчера поругались из-за денег» или «хочу понять, почему меня это задевает». Оба входа принимаются одинаково.</p>
+        </div>
+        <div class="cell">
+          <p class="k">Лаборатория отвечает</p>
+          <h3>Коротким разбором</h3>
+          <p>Что происходит, что попробовать, что сказать, чего избегать, следующий шаг. Не больше минуты чтения.</p>
+        </div>
+        <div class="cell">
+          <p class="k">И запоминает</p>
+          <h3>Важное, а не всё</h3>
+          <p>Имя партнёра, повторяющиеся сюжеты, что уже пробовали. В следующий раз разговор продолжается, а не начинается заново.</p>
+        </div>
+        <div class="cell sample" aria-label="Пример разговора">
+          <div class="msg user"><span class="who">Пример · вы</span>Опять вышло, что я решаю про деньги один, а потом слышу, что «со мной не советуются». Хотя я спрашивал.</div>
+          <div class="msg bot"><span class="who">Пример · Relation Lab</span>Похоже, вопрос не в том, спрашивали ли вы, а <em>когда</em>: после того как решение уже принято, вопрос звучит как уведомление.
+            <ul><li>Попробуйте: вынести следующий денежный выбор до решения, даже маленький.</li><li>Скажите: «Я хочу решить это вместе, а не показать готовое».</li><li>Избегайте: доказывать, что вы советовались.</li></ul>
+            В прошлый раз вы упоминали похожий сюжет с отпуском. Вернёмся к нему?</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <p class="f">Начните с себя. Позовите второго, когда будете готовы.</p>
+      <a class="btn" href="https://t.me/relationlab_bot"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.6 15.5 9.3 19c.4 0 .6-.2.8-.4l2-1.9 4.1 3c.8.4 1.3.2 1.5-.7l2.7-12.6c.3-1.1-.4-1.6-1.2-1.3L3.5 11.3c-1.1.4-1.1 1-.2 1.3l3.9 1.2 9-5.7c.4-.3.8-.1.5.2l-7.1 7.2z"/></svg>Открыть в Telegram</a>
+    </section>
+    <footer>
+      <span>Relation Lab, 2026</span>
+      <span>Не психотерапия и не диагностика. В кризисной ситуации помощник направит к специалистам.</span>
+      <span>Демо-страница: 3D на Three.js, анимации на GSAP.</span>
+    </footer>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+(function(){
+  if(!window.THREE){return;}
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var canvas = document.getElementById('scene');
+  var renderer = new THREE.WebGLRenderer({canvas:canvas, antialias:true, alpha:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+  camera.position.set(0, 0.2, 9);
+
+  var ME = new THREE.Color('#F4A58A'), YOU = new THREE.Color('#7FD3CC'), US = new THREE.Color('#FFF1DC');
+
+  // мягкое свечение: спрайт с радиальным градиентом
+  function glowTexture(){
+    var c = document.createElement('canvas'); c.width = c.height = 256;
+    var g = c.getContext('2d');
+    var r = g.createRadialGradient(128,128,0,128,128,128);
+    r.addColorStop(0,'rgba(255,255,255,1)'); r.addColorStop(0.25,'rgba(255,255,255,.55)');
+    r.addColorStop(0.6,'rgba(255,255,255,.12)'); r.addColorStop(1,'rgba(255,255,255,0)');
+    g.fillStyle = r; g.fillRect(0,0,256,256);
+    var t = new THREE.CanvasTexture(c); return t;
+  }
+  var glowTex = glowTexture();
+
+  function person(color){
+    var grp = new THREE.Group();
+    var geo = new THREE.SphereGeometry(0.62, 64, 64);
+    var mat = new THREE.MeshPhysicalMaterial({
+      color: color, roughness: 0.22, metalness: 0.05, clearcoat: 1, clearcoatRoughness: 0.15,
+      emissive: color, emissiveIntensity: 0.18, transparent: true, opacity: 0.96
+    });
+    var m = new THREE.Mesh(geo, mat); grp.add(m);
+    var glow = new THREE.Sprite(new THREE.SpriteMaterial({map: glowTex, color: color, transparent: true, opacity: 0.55, depthWrite:false, blending: THREE.AdditiveBlending}));
+    glow.scale.set(3.6,3.6,1); grp.add(glow);
+    grp.userData = {mesh:m, glow:glow};
+    return grp;
+  }
+  var me = person(ME), you = person(YOU);
+  scene.add(me, you);
+
+  // общее пространство «мы»: кольцо, появляется на 3–4 ступени
+  var ring = new THREE.Mesh(
+    new THREE.TorusGeometry(1.9, 0.035, 24, 160),
+    new THREE.MeshPhysicalMaterial({color: US, emissive: US, emissiveIntensity: 0.6, roughness: .3, transparent:true, opacity:0})
+  );
+  ring.rotation.x = Math.PI/2.6; scene.add(ring);
+  var ring2 = ring.clone(); ring2.material = ring.material.clone(); ring2.rotation.set(Math.PI/1.9, 0.5, 0); ring2.scale.setScalar(1.28); scene.add(ring2);
+
+  // частицы: поле, которое стягивается к общему центру
+  var N = 1800, pos = new Float32Array(N*3), base = new Float32Array(N*3), col = new Float32Array(N*3);
+  for (var i=0;i<N;i++){
+    var r = 2.2 + Math.random()*5.5, th = Math.random()*Math.PI*2, ph = Math.acos(2*Math.random()-1);
+    base[i*3] = r*Math.sin(ph)*Math.cos(th); base[i*3+1] = (r*Math.sin(ph)*Math.sin(th))*0.55; base[i*3+2] = r*Math.cos(ph)*0.6 - 1;
+    var c = (i%2===0?ME:YOU);
+    col[i*3]=c.r; col[i*3+1]=c.g; col[i*3+2]=c.b;
+  }
+  pos.set(base);
+  var pgeo = new THREE.BufferGeometry();
+  pgeo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  pgeo.setAttribute('color', new THREE.BufferAttribute(col,3));
+  var pmat = new THREE.PointsMaterial({size:0.045, vertexColors:true, map:glowTex, transparent:true, opacity:.75, depthWrite:false, blending:THREE.AdditiveBlending});
+  var points = new THREE.Points(pgeo, pmat); scene.add(points);
+
+  scene.add(new THREE.AmbientLight(0x9aa6c8, 0.5));
+  var key = new THREE.DirectionalLight(0xffffff, 1.1); key.position.set(3,4,5); scene.add(key);
+  var rim = new THREE.PointLight(0x7FD3CC, 0.8, 20); rim.position.set(-4,-2,3); scene.add(rim);
+  var rim2 = new THREE.PointLight(0xF4A58A, 0.8, 20); rim2.position.set(4,2,-2); scene.add(rim2);
+
+  // состояние сцены, которое двигает прокрутка
+  var S = { sep: 3.4, gather: 0, ring: 0, mix: 0, side: 1 };
+  var mouse = {x:0,y:0}, target = {x:0,y:0};
+  window.addEventListener('pointermove', function(e){
+    target.x = (e.clientX/window.innerWidth - .5); target.y = (e.clientY/window.innerHeight - .5);
+  }, {passive:true});
+
+  function resize(){
+    var w = canvas.clientWidth, h = canvas.clientHeight;
+    renderer.setSize(w, h, false); camera.aspect = w/h; camera.updateProjectionMatrix();
+    S.side = w < 820 ? 0.7 : 1;
+  }
+  window.addEventListener('resize', resize); resize();
+
+  var tmpC = new THREE.Color();
+  function render(t){
+    t = t*0.001;
+    mouse.x += (target.x - mouse.x)*0.04; mouse.y += (target.y - mouse.y)*0.04;
+    camera.position.x = mouse.x*0.8; camera.position.y = 0.2 - mouse.y*0.5; camera.lookAt(0,0,0);
+
+    var sep = S.sep*S.side, bob = reduce?0:Math.sin(t*0.9)*0.08;
+    me.position.set(-sep/2, bob, 0); you.position.set(sep/2, -bob, 0);
+    me.userData.mesh.rotation.y = t*0.25; you.userData.mesh.rotation.y = -t*0.2;
+
+    // на ступени «мы» цвета сближаются к тёплому свету
+    tmpC.copy(ME).lerp(US, S.mix*0.6); me.userData.mesh.material.color.copy(tmpC); me.userData.mesh.material.emissive.copy(tmpC); me.userData.glow.material.color.copy(tmpC);
+    tmpC.copy(YOU).lerp(US, S.mix*0.6); you.userData.mesh.material.color.copy(tmpC); you.userData.mesh.material.emissive.copy(tmpC); you.userData.glow.material.color.copy(tmpC);
+    var gs = 3.6 + S.mix*1.4; me.userData.glow.scale.set(gs,gs,1); you.userData.glow.scale.set(gs,gs,1);
+
+    ring.material.opacity = S.ring*0.9; ring2.material.opacity = S.ring*0.55;
+    ring.rotation.z = t*0.12; ring2.rotation.z = -t*0.09;
+    var rs = 0.6 + S.ring*0.4; ring.scale.setScalar(rs); ring2.scale.setScalar(rs*1.28);
+
+    // частицы стягиваются к центру по мере gather
+    var g = S.gather, p = pgeo.attributes.position.array;
+    for (var i=0;i<N;i++){
+      var bx = base[i*3], by = base[i*3+1], bz = base[i*3+2];
+      var d = Math.sqrt(bx*bx+by*by+bz*bz)||1;
+      var k = 1 - g*0.62;
+      var wob = reduce?0:Math.sin(t*0.6 + i)*0.04;
+      p[i*3]   = bx*k + wob;
+      p[i*3+1] = by*k + Math.cos(t*0.5 + i*0.3)*(reduce?0:0.03);
+      p[i*3+2] = bz*k;
+      // ближе к центру частицы теплеют
+      var w = g*(1 - Math.min(d/6,1));
+      var c = (i%2===0?ME:YOU);
+      col[i*3]   = c.r + (US.r-c.r)*w; col[i*3+1] = c.g + (US.g-c.g)*w; col[i*3+2] = c.b + (US.b-c.b)*w;
+    }
+    pgeo.attributes.position.needsUpdate = true; pgeo.attributes.color.needsUpdate = true;
+    points.rotation.y = reduce?0:t*0.03;
+
+    renderer.render(scene, camera);
+    if(!reduce) requestAnimationFrame(render);
+  }
+  requestAnimationFrame(render);
+  if(reduce){ setTimeout(function(){ requestAnimationFrame(render); }, 300); }
+
+  // прокрутка ведёт сцену по лестнице
+  if (window.gsap && window.ScrollTrigger){
+    gsap.registerPlugin(ScrollTrigger);
+    var stages = [
+      {sep:3.4, gather:0.0, ring:0, mix:0},   // hero
+      {sep:3.8, gather:0.1, ring:0, mix:0},   // Я
+      {sep:2.6, gather:0.35, ring:0, mix:0.2},// Ты
+      {sep:1.25,gather:0.8, ring:0.6, mix:0.8},// Мы
+      {sep:1.05,gather:1.0, ring:1, mix:1}    // наша жизнь
+    ];
+    var steps = document.querySelectorAll('.step');
+    function tween(to){ gsap.to(S, {sep:to.sep, gather:to.gather, ring:to.ring, mix:to.mix, duration: reduce?0:1.4, ease:'power2.out', onUpdate: reduce?function(){requestAnimationFrame(render);}:null}); }
+    steps.forEach(function(el, i){
+      ScrollTrigger.create({
+        trigger: el, start: 'top 60%', end: 'bottom 60%',
+        onEnter: function(){ tween(stages[i+1]); },
+        onEnterBack: function(){ tween(stages[i+1]); },
+        onLeaveBack: function(){ if(i===0) tween(stages[0]); }
+      });
+      if(!reduce){
+        gsap.from(el.querySelector('div'), {y: 28, opacity: .001, duration: 1, ease:'power2.out',
+          scrollTrigger:{trigger: el, start:'top 75%', toggleActions:'play none none none'}});
+      }
+    });
+    if(!reduce){
+      gsap.from('.hero > *', {y: 18, opacity: 0.001, duration: 1.1, stagger: 0.12, ease:'power2.out', delay: .1});
+    }
+  }
+})();
+</script>
