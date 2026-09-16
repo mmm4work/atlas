@@ -219,7 +219,8 @@
       // наклон кольца
       var y2 = y*Math.cos(tilt) - z*Math.sin(tilt), z2 = y*Math.sin(tilt) + z*Math.cos(tilt);
       var x3 = x*Math.cos(yaw) - z2*Math.sin(yaw), z3 = x*Math.sin(yaw) + z2*Math.cos(yaw);
-      orbit[i*3]=x3; orbit[i*3+1]=y2; orbit[i*3+2]=z3; orbitRing[i]=r;
+      // кольца — не нити, а «трубы»: разброс во все стороны, чтобы ни одно не сжималось в яркую линию
+      orbit[i*3]=x3+(Math.random()-0.5)*0.5; orbit[i*3+1]=y2+(Math.random()-0.5)*0.5; orbit[i*3+2]=z3+(Math.random()-0.5)*0.5; orbitRing[i]=r;
     }
   })();
 
@@ -300,7 +301,7 @@
     '  vHeat = kh;',
     // яркость: в сердце и орбитах частиц много в малом объёме — гасим, иначе белое пятно
     '  float dim = mix(1.0, mix(0.26, 0.30, halo), kh);',
-    '  dim = mix(dim, 0.13, ko);',
+    '  dim = mix(dim, 0.09, ko);',
     '  vDim = dim;',
     '  vSide = aSide; vRnd = aRnd.z;',
     '  vec4 mv = modelViewMatrix * vec4(p,1.0);',
