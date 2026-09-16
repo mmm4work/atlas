@@ -301,7 +301,7 @@
     '  vHeat = kh;',
     // яркость: в сердце и орбитах частиц много в малом объёме — гасим, иначе белое пятно
     '  float dim = mix(1.0, mix(0.26, 0.30, halo), kh);',
-    '  dim = mix(dim, 0.09, ko);',
+    '  dim = mix(dim, 0.2, ko);',
     '  vDim = dim;',
     '  vSide = aSide; vRnd = aRnd.z;',
     '  vec4 mv = modelViewMatrix * vec4(p,1.0);',
@@ -309,7 +309,7 @@
     '  gl_Position = projectionMatrix * mv;',
     // размер: основная масса — мягкие искры, каждая десятая — большое облако (объём и «дым»)
     '  float big = step(0.9, aRnd.y);',
-    '  float size = (3.0 + aRnd.y*5.0 + big*22.0) * mix(1.0, mix(0.9, 1.4, halo), kh) * mix(1.0, 1.5, ko) * uPx;',
+    '  float size = (3.0 + aRnd.y*5.0 + big*22.0) * mix(1.0, mix(0.9, 1.4, halo), kh) * mix(1.0, 1.5 - big*1.1, ko) * uPx;',
     '  vBig = big;',
     '  gl_PointSize = size * (14.0 / -mv.z) * (1.0 - uCalm*0.4);',
     '}'
